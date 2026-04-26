@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist | YJ Menswear</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header" class="scrolled">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+        <nav>
+            <ul>
+                <li><a href="dashboard-orders.html" style="color: var(--primary);">Account</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="section" style="margin-top: 80px;">
+        <div class="dashboard-grid">
+            <aside class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard-orders.html">My Orders</a></li>
+                    <li><a href="dashboard-settings.html">Account Settings</a></li>
+                    <li><a href="dashboard-address.html">Shipping Address</a></li>
+                    <li class="active"><a href="dashboard-wishlist.html">Wishlist</a></li>
+                </ul>
+            </aside>
+            <div class="dashboard-content">
+                <div style="background: var(--bg-card); padding: 30px; border: 1px solid var(--glass);">
+                    <h3 style="margin-bottom: 20px; color: var(--primary);">My Wishlist</h3>
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <p style="color: var(--text-muted);">Your wishlist is empty.</p>
+                        <div style="margin-top: 40px;"><a href="index.html" class="cta-button">Explore Products</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

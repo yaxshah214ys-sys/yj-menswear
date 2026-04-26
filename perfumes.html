@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfumes | YJ Menswear</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header" class="scrolled">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+        <nav>
+            <ul>
+                <li><a href="dashboard-orders.html" style="color: var(--primary);">Account</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="index.html#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="section" style="margin-top: 80px;">
+        <div style="margin-bottom: 20px;">
+            <a href="index.html#categories" class="cta-button" style="padding: 8px 15px; font-size: 0.8rem;">&larr; Back to Categories</a>
+        </div>
+        <div class="section-title">
+            <h2>Premium Perfumes</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-img slider-container" id="villainSlider">
+                        <img src="images/Villain.png.webp" class="slider-img active" alt="Villain Angle 1">
+                        <img src="images/Villain_1.png.webp" class="slider-img" alt="Villain Angle 2">
+                        <img src="images/Villain_3.png.webp" class="slider-img" alt="Villain Angle 3">
+                        <div class="slider-dots">
+                            <span class="dot active" onclick="setSlide(0)"></span>
+                            <span class="dot" onclick="setSlide(1)"></span>
+                            <span class="dot" onclick="setSlide(2)"></span>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">Villain</div>
+                        <div class="product-name">Villain Hydra (Multi-Angle)</div>
+                        <div class="product-price">₹799</div>
+                        <a href="checkout.html?product=Villain Hydra&price=₹799" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                    </div>
+                </div>
+
+                <style>
+                    .slider-container { position: relative; overflow: hidden; }
+                    .slider-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.5s ease; object-fit: cover; }
+                    .slider-img.active { opacity: 1; position: relative; }
+                    .slider-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10; }
+                    .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; cursor: pointer; border: 1px solid var(--primary); }
+                    .dot.active { background: var(--primary); }
+                </style>
+
+                <script>
+                    let currentSlide = 0;
+                    function setSlide(index) {
+                        const slides = document.querySelectorAll('.slider-img');
+                        const dots = document.querySelectorAll('.dot');
+                        slides[currentSlide].classList.remove('active');
+                        dots[currentSlide].classList.remove('active');
+                        currentSlide = index;
+                        slides[currentSlide].classList.add('active');
+                        dots[currentSlide].classList.add('active');
+                    }
+                </script>
+            <div class="product-card">
+                <div class="product-img">
+                    <img src="images/cfs_perfume_1777188677333.png" alt="CFS Perfume">
+                </div>
+                <div class="product-info">
+                    <div class="product-brand">CFS</div>
+                    <div class="product-name">Luxury Gold</div>
+                    <div class="product-price">₹1,299</div>
+                    <a href="checkout.html?product=CFS Luxury Gold&price=₹1,299" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img">
+                    <img src="images/axe_perfume_1777188654537.png" alt="Axe Perfume">
+                </div>
+                <div class="product-info">
+                    <div class="product-brand">Axe</div>
+                    <div class="product-name">Signature Ticket</div>
+                    <div class="product-price">₹499</div>
+                    <a href="checkout.html?product=Axe Signature Ticket&price=₹499" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img">
+                    <img src="images/patel_perfume_1777188694876.png" alt="Patel Perfume">
+                </div>
+                <div class="product-info">
+                    <div class="product-brand">Patel</div>
+                    <div class="product-name">Heritage Oud</div>
+                    <div class="product-price">₹4,999</div>
+                    <a href="checkout.html?product=Patel Heritage Oud&price=₹4,999" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img">
+                    <img src="images/wildstone_perfume_1777188630337.png" alt="Wildstone Perfume">
+                </div>
+                <div class="product-info">
+                    <div class="product-brand">Wildstone</div>
+                    <div class="product-name">Code Iridium</div>
+                    <div class="product-price">₹899</div>
+                    <a href="checkout.html?product=Wildstone Code Iridium&price=₹899" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-bottom">
+            &copy; 2026 YJ Menswear. All Rights Reserved.
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

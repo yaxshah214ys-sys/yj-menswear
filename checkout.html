@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | YJ Menswear</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header" class="scrolled">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+    </header>
+
+    <main class="section" style="margin-top: 80px;">
+        <div class="form-container">
+            <div class="section-title">
+                <h2>Shipping Details</h2>
+                <div class="line"></div>
+            </div>
+            <div style="background: var(--glass); padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+                <p><strong>Product:</strong> <span id="displayProductName">Loading...</span></p>
+                <p><strong>Total:</strong> <span id="displayProductPrice">₹0</span></p>
+            </div>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="custName" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp Number</label>
+                    <input type="tel" id="custPhone" placeholder="Mobile Number" required>
+                </div>
+                <div class="form-group">
+                    <label>Street Address</label>
+                    <input type="text" id="custAddress" placeholder="House No, Area" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" id="custCity" placeholder="City" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Pincode</label>
+                        <input type="text" id="custPincode" placeholder="Pincode" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Delivery Instructions (Optional)</label>
+                    <textarea id="custNotes" placeholder="Any specific instructions?"></textarea>
+                </div>
+                <button type="submit" class="cta-button" style="width: 100%; margin-top: 20px;">Place Order via WhatsApp</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productName = urlParams.get('product') || 'Selected Product';
+        const productPrice = urlParams.get('price') || 'Contact for Price';
+
+        document.getElementById('displayProductName').innerText = productName;
+        document.getElementById('displayProductPrice').innerText = productPrice;
+
+        // Auto-fill address if saved
+        const storedAddress = JSON.parse(localStorage.getItem('userAddress')) || {};
+        if (storedAddress.street) {
+            document.getElementById('custAddress').value = storedAddress.street;
+            document.getElementById('custCity').value = storedAddress.city;
+            document.getElementById('custPincode').value = storedAddress.pincode;
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('custName').value;
+            const phone = document.getElementById('custPhone').value;
+            const address = document.getElementById('custAddress').value;
+            const city = document.getElementById('custCity').value;
+            const pincode = document.getElementById('custPincode').value;
+            const instructions = document.getElementById('custNotes').value || 'None';
+
+            const message = `*NEW ORDER - YJ MENSWEAR*%0A%0A` +
+                            `*Product:* ${productName}%0A` +
+                            `*Price:* ${productPrice}%0A%0A` +
+                            `*Customer:* ${name}%0A` +
+                            `*Contact:* ${phone}%0A%0A` +
+                            `*Delivery Address:*%0A${address}, ${city} - ${pincode}%0A%0A` +
+                            `*Instructions:* ${instructions}`;
+
+            // Save order to history
+            const newOrder = {
+                id: '#YJ-' + Math.floor(1000 + Math.random() * 9000),
+                date: new Date().toLocaleDateString('en-IN'),
+                product: productName,
+                total: productPrice
+            };
+            const orders = JSON.parse(localStorage.getItem('userOrders')) || [];
+            orders.push(newOrder);
+            localStorage.setItem('userOrders', JSON.stringify(orders));
+
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const waUrl = isMobile 
+                ? `https://api.whatsapp.com/send?phone=917984822059&text=${message}`
+                : `https://web.whatsapp.com/send?phone=917984822059&text=${message}`;
+
+            window.open(waUrl, '_blank');
+            alert("Redirecting to WhatsApp to confirm your order!");
+        });
+    </script>
+</body>
+</html>
