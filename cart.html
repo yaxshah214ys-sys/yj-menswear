@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart | YJ Menswear</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header" class="scrolled">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+        <nav>
+            <ul>
+                <li><a href="cart.html" id="cartCount" style="color: var(--primary);">Cart (0)</a></li>
+                <li><a href="dashboard-orders.html">Account</a></li>
+                <li><a href="index.html">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="section" style="margin-top: 80px;">
+        <div class="section-title">
+            <h2>Shopping Cart</h2>
+            <div class="line"></div>
+        </div>
+
+        <div id="cartItems" class="form-container" style="max-width: 900px; background: var(--bg-card);">
+            <!-- Cart items will be loaded here -->
+            <p style="text-align: center; color: var(--text-muted);">Your cart is empty.</p>
+        </div>
+
+        <div id="cartSummary" class="form-container" style="max-width: 900px; margin-top: 20px; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="totalPrice">Total: ₹0</h3>
+                <button onclick="checkoutCart()" class="cta-button">Checkout via WhatsApp</button>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="index.html#categories" class="cta-button" style="background: transparent; color: var(--primary);">Continue Shopping</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-bottom">&copy; 2026 YJ Menswear. All Rights Reserved.</div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        function loadCart() {
+            const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+            const container = document.getElementById('cartItems');
+            const summary = document.getElementById('cartSummary');
+            const cartCount = document.getElementById('cartCount');
+            
+            cartCount.innerText = `Cart (${cartItems.length})`;
+
+            if (cartItems.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Your cart is empty.</p>';
+                summary.style.display = 'none';
+                return;
+            }
+
+            summary.style.display = 'block';
+            let html = '';
+            let total = 0;
+
+            cartItems.forEach((item, index) => {
+                const qty = item.quantity || 1;
+                const priceNum = parseInt(item.price.replace(/[₹,]/g, ''));
+                total += (priceNum * qty);
+                
+                html += `
+                    <div style="display: flex; gap: 20px; align-items: center; border-bottom: 1px solid var(--glass); padding: 15px 0;">
+                        <img src="${item.img}" style="width: 80px; height: 80px; object-fit: contain; background: #fff; padding: 5px; border-radius: 4px;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.8rem; color: var(--primary);">${item.brand}</div>
+                            <div style="font-weight: 600;">${item.name}</div>
+                            <div style="color: var(--text-muted);">${item.price}</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-right: 20px;">
+                            <button onclick="updateQuantity(${index}, -1)" style="width: 25px; height: 25px; border: 1px solid var(--primary); background: transparent; color: white; cursor: pointer;">-</button>
+                            <span>${qty}</span>
+                            <button onclick="updateQuantity(${index}, 1)" style="width: 25px; height: 25px; border: 1px solid var(--primary); background: transparent; color: white; cursor: pointer;">+</button>
+                        </div>
+                        <button onclick="removeFromCart(${index})" style="background: transparent; border: none; color: #ff4d4d; cursor: pointer;">Remove</button>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            document.getElementById('totalPrice').innerText = `Total: ₹${total.toLocaleString()}`;
+        }
+
+        function updateQuantity(index, change) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            let qty = cart[index].quantity || 1;
+            qty += change;
+            if (qty < 1) qty = 1;
+            cart[index].quantity = qty;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadCart();
+        }
+
+        function removeFromCart(index) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadCart();
+        }
+
+        function checkoutCart() {
+            const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+            let message = "New Order from YJ Menswear:\n\n";
+            let total = 0;
+            
+            cartItems.forEach(item => {
+                const qty = item.quantity || 1;
+                message += `- ${item.name} x ${qty} (${item.price})\n`;
+                total += (parseInt(item.price.replace(/[₹,]/g, '')) * qty);
+            });
+            
+            message += `\nTotal Amount: ₹${total.toLocaleString()}`;
+            
+            const whatsappUrl = `https://wa.me/7984822059?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        window.onload = loadCart;
+    </script>
+</body>
+</html>

@@ -11,7 +11,8 @@
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
         <nav>
             <ul>
-                <li><a href="dashboard-orders.html" style="color: var(--primary);">Account</a></li>
+                <li><a href="cart.html" style="color: var(--primary);">Cart</a></li>
+                <li><a href="dashboard-orders.html">Account</a></li>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
                 <li><a href="index.html#about">About</a></li>
@@ -29,24 +30,41 @@
         </div>
 
         <div class="product-grid">
-            <div class="product-card">
-                <div class="product-img">
-                    <img src="images/leather_wallet_black_1777188734900.png" alt="Black Wallet">
+            <!-- Black Wallet -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Luxury&product=Midnight Noir Bifold&price=₹2,499&imgBase=images/wallet_black&ext=png&desc=A classic bifold wallet crafted from premium full-grain leather. Features 8 card slots, dual currency compartments, and a sleek minimalist profile.'">
+                <div class="product-img slider-container">
+                    <img src="images/wallet_black.png" class="slider-img active" alt="Black Wallet 1">
+                    <img src="images/wallet_black_2.png" class="slider-img" alt="Black Wallet 2">
+                    <img src="images/wallet_black_3.png" class="slider-img" alt="Black Wallet 3">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 2)"></span>
+                    </div>
                 </div>
                 <div class="product-info">
                     <div class="product-name">Midnight Noir Bifold</div>
                     <div class="product-price">₹2,499</div>
-                    <a href="checkout.html?product=Midnight Noir Bifold&price=₹2,499" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
-            <div class="product-card">
-                <div class="product-img">
-                    <img src="images/leather_wallet_tan_1777188716416.png" alt="Tan Wallet">
+
+            <!-- Tan Wallet -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Luxury&product=Rustic Tan Slimfold&price=₹1,999&imgBase=images/wallet_tan&ext=png&desc=Elegant and functional. This rustic tan slimfold is perfect for the modern man. Hand-stitched for durability with a soft, natural leather finish.'">
+                <div class="product-img slider-container">
+                    <img src="images/wallet_tan.png" class="slider-img active" alt="Tan Wallet 1">
+                    <img src="images/wallet_tan_2.png" class="slider-img" alt="Tan Wallet 2">
+                    <img src="images/wallet_tan_3.png" class="slider-img" alt="Tan Wallet 3">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 2)"></span>
+                    </div>
                 </div>
                 <div class="product-info">
                     <div class="product-name">Rustic Tan Slimfold</div>
                     <div class="product-price">₹1,999</div>
-                    <a href="checkout.html?product=Rustic Tan Slimfold&price=₹1,999" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
         </div>

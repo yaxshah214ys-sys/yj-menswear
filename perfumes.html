@@ -11,7 +11,8 @@
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
         <nav>
             <ul>
-                <li><a href="dashboard-orders.html" style="color: var(--primary);">Account</a></li>
+                <li><a href="cart.html" style="color: var(--primary);">Cart</a></li>
+                <li><a href="dashboard-orders.html">Account</a></li>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
                 <li><a href="index.html#about">About</a></li>
@@ -29,88 +30,103 @@
         </div>
 
         <div class="product-grid">
-                <div class="product-card">
-                    <div class="product-img slider-container" id="villainSlider">
-                        <img src="images/Villain.png.webp" class="slider-img active" alt="Villain Angle 1">
-                        <img src="images/Villain_1.png.webp" class="slider-img" alt="Villain Angle 2">
-                        <img src="images/Villain_3.png.webp" class="slider-img" alt="Villain Angle 3">
-                        <div class="slider-dots">
-                            <span class="dot active" onclick="setSlide(0)"></span>
-                            <span class="dot" onclick="setSlide(1)"></span>
-                            <span class="dot" onclick="setSlide(2)"></span>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <div class="product-brand">Villain</div>
-                        <div class="product-name">Villain Hydra (Multi-Angle)</div>
-                        <div class="product-price">₹799</div>
-                        <a href="checkout.html?product=Villain Hydra&price=₹799" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+            <!-- Villain -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=Villain&product=VILLAIN Classic perfume | Long Lasting EDP | Bold Woody Fragrance Eau de Parfum - 100 ml (For Men)&price=₹400&originalPrice=₹799&imgBase=images/villain_perfume&ext=webp&desc=This macho scent is made for the rebel in you who knows how to go out strong and make it last for long.'">
+                <div class="product-img slider-container">
+                    <img src="images/villain_perfume.webp" class="slider-img active" alt="Villain 1">
+                    <img src="images/villain_perfume_2.webp" class="slider-img" alt="Villain 2">
+                    <img src="images/villain_perfume_3.webp" class="slider-img" alt="Villain 3">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 2)"></span>
                     </div>
                 </div>
+                <div class="product-info">
+                    <div class="product-brand">Villain</div>
+                    <div class="product-name">VILLAIN Classic perfume | Long Lasting EDP | Bold Woody Fragrance Eau de Parfum - 100 ml (For Men)</div>
+                    <div class="product-price">₹400 <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px;">₹799</span></div>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
+                </div>
+            </div>
 
-                <style>
-                    .slider-container { position: relative; overflow: hidden; }
-                    .slider-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.5s ease; object-fit: cover; }
-                    .slider-img.active { opacity: 1; position: relative; }
-                    .slider-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10; }
-                    .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; cursor: pointer; border: 1px solid var(--primary); }
-                    .dot.active { background: var(--primary); }
-                </style>
-
-                <script>
-                    let currentSlide = 0;
-                    function setSlide(index) {
-                        const slides = document.querySelectorAll('.slider-img');
-                        const dots = document.querySelectorAll('.dot');
-                        slides[currentSlide].classList.remove('active');
-                        dots[currentSlide].classList.remove('active');
-                        currentSlide = index;
-                        slides[currentSlide].classList.add('active');
-                        dots[currentSlide].classList.add('active');
-                    }
-                </script>
-            <div class="product-card">
-                <div class="product-img">
-                    <img src="images/cfs_perfume_1777188677333.png" alt="CFS Perfume">
+            <!-- CFS -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=CFS&product=CFS Cargo Intense EDP Long Lasting Unisex Perfume Eau de Parfum - 100 ml (For Men %26 Women)&price=₹250&originalPrice=₹799&imgBase=images/cfs_perfume&ext=png&desc=This iconic fragrance opens with citrus notes of Mandarin, Lemon and Bergamot. The heart evolves with a floral dose of Rose and Jasmine. The dry down is composed of Sandalwood, Patchouli and Amber. TOP NOTE - Mandarin, Lavender, Lemon, Bergamot HEART NOTE - Cardamom, Jasmine, Rose, Anise BASE NOTE - Sandalwood, Patchouli, Wormwood, Amber'">
+                <div class="product-img slider-container">
+                    <img src="images/cfs_perfume.png" class="slider-img active" alt="CFS 1">
+                    <img src="images/cfs_perfume_2.png" class="slider-img" alt="CFS 2">
+                    <img src="images/cfs_perfume_3.png" class="slider-img" alt="CFS 3">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 2)"></span>
+                    </div>
                 </div>
                 <div class="product-info">
                     <div class="product-brand">CFS</div>
-                    <div class="product-name">Luxury Gold</div>
-                    <div class="product-price">₹1,299</div>
-                    <a href="checkout.html?product=CFS Luxury Gold&price=₹1,299" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                    <div class="product-name">CFS Cargo Intense EDP Long Lasting Unisex Perfume Eau de Parfum - 100 ml (For Men & Women)</div>
+                    <div class="product-price">₹250 <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px;">₹799</span></div>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
-            <div class="product-card">
-                <div class="product-img">
-                    <img src="images/axe_perfume_1777188654537.png" alt="Axe Perfume">
+
+            <!-- Axe -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=Axe&product=AXE Signature Mysterious Deodorant No Gas Body Perfume Body Spray - For Men (154 ml)&price=₹280&originalPrice=₹300&imgBase=images/axe_perfume&ext=png&desc=Introducing the Signature Mysterious Deodorant by Axe - the world’s #1 men’s deodorant brand. Discover the perfect addition to your daily grooming regime with Axe’s range of long-lasting fragrances. The 0% gas Axe deo for men is formulated with 72HR Dual Action Technology, offering lasting odour protection to keep you smelling great and feeling fresh. There’s something irresistible about the men who are mysterious; their secrecy is magnetic, attracting curious explorers to try and uncover what lies beneath. With Axe Signature Mysterious deodorant for men, bring on an air of mystery. With notes of Sage, Patchouli, Green Apple and Marine, this tropical green scented deodorant is full of mystery. Hold the can 15 cm away from your body and spray on your chest, neck, and pulse points for a lasting scent. Axe’s long-lasting deodorants feature a new zinc formula that enhances odour protection, making them the perfect pick for your daily grooming needs. Plus, our deodorants are safe to spray directly onto your skin, as they are made without parabens or dyes. Choose from Axe’s range of deodorants for men, including Intense, Mysterious, Champion, and more. With Axe, you get the best wingman there is - hotter, smoother, and ready for anything. Choose your signature scent today!'">
+                <div class="product-img slider-container">
+                    <img src="images/axe_perfume.png" class="slider-img active" alt="Axe 1">
+                    <img src="images/axe_perfume_2.png" class="slider-img" alt="Axe 2">
+                    <img src="images/axe_perfume_3.png" class="slider-img" alt="Axe 3">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 2)"></span>
+                    </div>
                 </div>
                 <div class="product-info">
                     <div class="product-brand">Axe</div>
-                    <div class="product-name">Signature Ticket</div>
-                    <div class="product-price">₹499</div>
-                    <a href="checkout.html?product=Axe Signature Ticket&price=₹499" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                    <div class="product-name">AXE Signature Mysterious Deodorant No Gas Body Perfume Body Spray - For Men (154 ml)</div>
+                    <div class="product-price">₹280 <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px;">₹300</span></div>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
-            <div class="product-card">
-                <div class="product-img">
-                    <img src="images/patel_perfume_1777188694876.png" alt="Patel Perfume">
+
+            <!-- Patel -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=Patel&product=PATEL NECK 50 ML UNISEX APPAREL PERFUME Perfume - 50 ml (For Men %26 Women)&price=₹500&originalPrice=₹550&imgBase=images/patel_perfume&ext=png&desc=Perfumes have become increasingly popular in recent years because they make you smell and feel good all day. Not only that, but it also raises one’s self-esteem. It not only allows you to reduce your anxiety, but it also helps you to grow a great personality and boost your mood. This perfume will surely help you to increase your personality it also help you to enhance your mood. Wearing this perfume will help you to project your mood well effectively. This fragrance enhances your attractiveness. One of the most critical of the five senses is the sense of smell. Your scent would be the first thing people notice when they walk into a room and the last thing they notice when they leave. This Perfumes contain a number of good smelling ingredients that can make you more appealing to others, ensuring that the above-mentioned first and lasting impressions are friendly and unforgettable.'">
+                <div class="product-img slider-container">
+                    <img src="images/patel_perfume.png" class="slider-img active" alt="Patel 1">
+                    <img src="images/patel_perfume_2.png" class="slider-img" alt="Patel 2">
+                    <img src="images/patel_perfume_3.png" class="slider-img" alt="Patel 3">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 2)"></span>
+                    </div>
                 </div>
                 <div class="product-info">
                     <div class="product-brand">Patel</div>
-                    <div class="product-name">Heritage Oud</div>
-                    <div class="product-price">₹4,999</div>
-                    <a href="checkout.html?product=Patel Heritage Oud&price=₹4,999" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                    <div class="product-name">PATEL NECK 50 ML UNISEX APPAREL PERFUME Perfume - 50 ml (For Men & Women)</div>
+                    <div class="product-price">₹500 <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px;">₹550</span></div>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
-            <div class="product-card">
-                <div class="product-img">
-                    <img src="images/wildstone_perfume_1777188630337.png" alt="Wildstone Perfume">
+
+            <!-- Wildstone -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=Wildstone&product=Wild Stone Edge I Eau de Parfum Eau de Parfum - 100 ml (For Men)&price=₹550&originalPrice=₹699&imgBase=images/wildstone_perfume&ext=png&desc=Wild Stone Deodorant Perfume have 24 hour fragrance provided you and no gas perfume its very best perfume and deodorant for men and women'">
+                <div class="product-img slider-container">
+                    <img src="images/wildstone_perfume.png" class="slider-img active" alt="Wildstone 1">
+                    <img src="images/wildstone_perfume_2.png" class="slider-img" alt="Wildstone 2">
+                    <img src="images/wildstone_perfume_3.png" class="slider-img" alt="Wildstone 3">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 2)"></span>
+                    </div>
                 </div>
                 <div class="product-info">
                     <div class="product-brand">Wildstone</div>
-                    <div class="product-name">Code Iridium</div>
-                    <div class="product-price">₹899</div>
-                    <a href="checkout.html?product=Wildstone Code Iridium&price=₹899" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                    <div class="product-name">Wild Stone Edge I Eau de Parfum Eau de Parfum - 100 ml (For Men)</div>
+                    <div class="product-price">₹550 <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px;">₹699</span></div>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
         </div>

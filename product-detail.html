@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | YJ Menswear</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header" class="scrolled">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+        <nav>
+            <ul>
+                <li><a href="dashboard-orders.html" style="color: var(--primary);">Account</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="index.html#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="section" style="margin-top: 80px;">
+        <div style="margin-bottom: 20px;">
+            <a href="javascript:history.back()" class="cta-button" style="padding: 8px 15px; font-size: 0.8rem;">&larr; Back</a>
+        </div>
+
+        <div class="product-detail-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;">
+            <!-- Left: Image Slider -->
+            <div class="product-img slider-container" style="height: 500px; background: #fff; border-radius: 8px;">
+                <div id="detailSlider" class="slider-container">
+                    <!-- Images will be injected here -->
+                </div>
+            </div>
+
+            <!-- Right: Info -->
+            <div class="product-info-detail">
+                <div id="productBrand" class="product-brand" style="font-size: 1.2rem;">Brand Name</div>
+                <h1 id="productName" style="font-size: 3rem; margin-bottom: 15px;">Product Name</h1>
+                <div id="productPrice" style="font-size: 1.8rem; font-weight: 700; color: var(--primary); margin-bottom: 20px;">
+                    <span id="displayPrice">₹0</span>
+                    <span id="displayOriginalPrice" style="text-decoration: line-through; color: var(--text-muted); font-size: 1.2rem; margin-left: 15px; font-weight: 400;"></span>
+                </div>
+                
+                <div class="product-description">
+                    <h3 style="color: var(--primary); margin-bottom: 10px;">Product Information</h3>
+                    <p id="productDesc" style="color: var(--text-muted); line-height: 1.8; margin-bottom: 40px;">
+                        Loading description...
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 30px; display: flex; align-items: center; gap: 15px;">
+                    <span style="color: var(--text-muted);">Quantity:</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button onclick="changeQty(-1)" style="width: 35px; height: 35px; border: 1px solid var(--primary); background: transparent; color: white; cursor: pointer;">-</button>
+                        <span id="qtyDisplay" style="font-size: 1.2rem; min-width: 30px; text-align: center;">1</span>
+                        <button onclick="changeQty(1)" style="width: 35px; height: 35px; border: 1px solid var(--primary); background: transparent; color: white; cursor: pointer;">+</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 20px;">
+                    <button onclick="addToCart()" class="cta-button" style="flex: 1; background: transparent; color: var(--primary);">Add to Cart</button>
+                    <button onclick="buyNowDetail()" class="cta-button" style="flex: 1;">Buy Now</button>
+                </div>
+
+                <div style="margin-top: 40px; padding: 20px; border: 1px solid var(--glass); border-radius: 8px;">
+                    <h4 style="margin-bottom: 15px;">Why Shop With Us?</h4>
+                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.9rem;">
+                        <li style="margin-bottom: 8px;">✨ 100% Original Quality</li>
+                        <li style="margin-bottom: 8px;">🚚 Free Delivery in India</li>
+                        <li style="margin-bottom: 8px;">📞 24/7 WhatsApp Support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-bottom">&copy; 2026 YJ Menswear. All Rights Reserved.</div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Load Product Data from URL
+        const params = new URLSearchParams(window.location.search);
+        const brand = params.get('brand') || 'YJ Menswear';
+        const product = params.get('product') || 'Premium Product';
+        const price = params.get('price') || '₹0';
+        const originalPrice = params.get('originalPrice') || '';
+        const imgBase = params.get('imgBase') || 'images/hero';
+        const ext = params.get('ext') || 'png';
+        const description = params.get('desc') || 'High-quality premium product for men.';
+
+        document.getElementById('productBrand').innerText = brand;
+        document.getElementById('productName').innerText = product;
+        document.getElementById('displayPrice').innerText = price;
+        document.getElementById('productDesc').innerText = description;
+        
+        if (originalPrice) {
+            document.getElementById('displayOriginalPrice').innerText = originalPrice;
+        }
+
+        // Inject Slider Images
+        const slider = document.getElementById('detailSlider');
+        let imagesHtml = '';
+        let dotsHtml = '';
+        
+        for(let i=1; i<=3; i++) {
+            const suffix = i === 1 ? '' : `_${i}`;
+            const imgSrc = `${imgBase}${suffix}.${ext}`;
+            imagesHtml += `<img src="${imgSrc}" class="slider-img ${i===1?'active':''}" alt="Angle ${i}">`;
+            dotsHtml += `<span class="dot ${i===1?'active':''}" onclick="setSlide(this, ${i-1})"></span>`;
+        }
+        
+        slider.innerHTML = imagesHtml + `<div class="slider-dots">${dotsHtml}</div>`;
+
+        let currentQty = 1;
+        function changeQty(change) {
+            currentQty += change;
+            if (currentQty < 1) currentQty = 1;
+            document.getElementById('qtyDisplay').innerText = currentQty;
+        }
+
+        function buyNowDetail() {
+            window.location.href = `checkout.html?product=${encodeURIComponent(product)}&price=${encodeURIComponent(price)}&qty=${currentQty}`;
+        }
+
+        function addToCart() {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            // Check if item already exists
+            const existingIndex = cart.findIndex(item => item.name === product);
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + currentQty;
+            } else {
+                cart.push({ 
+                    name: product, 
+                    price: price, 
+                    brand: brand, 
+                    img: `${imgBase}.${ext}`,
+                    quantity: currentQty 
+                });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`Added ${currentQty} ${product}(s) to cart!`);
+        }
+    </script>
+</body>
+</html>

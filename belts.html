@@ -11,7 +11,8 @@
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
         <nav>
             <ul>
-                <li><a href="dashboard-orders.html" style="color: var(--primary);">Account</a></li>
+                <li><a href="cart.html" style="color: var(--primary);">Cart</a></li>
+                <li><a href="dashboard-orders.html">Account</a></li>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
                 <li><a href="index.html#about">About</a></li>
@@ -29,37 +30,63 @@
         </div>
 
         <div class="product-grid">
-            <div class="product-card">
-                <div class="product-img">
-                    <img src="images/black_leather_belt_1777199590136.png" alt="Black Belt">
+            <!-- Black Belt -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Classic&product=Full Grain Black&price=₹1,499&imgBase=images/belt_black&ext=png&desc=A versatile full-grain black leather belt featuring a polished silver buckle. Essential for formal attire and everyday professional wear.'">
+                <div class="product-img slider-container">
+                    <img src="images/belt_black.png" class="slider-img active" alt="Black Belt 1">
+                    <img src="images/belt_black_2.png" class="slider-img" alt="Black Belt 2">
+                    <img src="images/belt_black_3.png" class="slider-img" alt="Black Belt 3">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 2)"></span>
+                    </div>
                 </div>
                 <div class="product-info">
                     <div class="product-brand">YJ Classic</div>
                     <div class="product-name">Full Grain Black</div>
                     <div class="product-price">₹1,499</div>
-                    <a href="checkout.html?product=Full Grain Black Belt&price=₹1,499" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
-            <div class="product-card">
-                <div class="product-img">
-                    <img src="images/brown_leather_belt_1777199606144.png" alt="Brown Belt">
+
+            <!-- Brown Belt -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Heritage&product=Vintage Walnut&price=₹1,699&imgBase=images/belt_brown&ext=png&desc=A rich walnut brown belt with a vintage textured finish. Perfect for pairing with chinos and casual leather shoes.'">
+                <div class="product-img slider-container">
+                    <img src="images/belt_brown.png" class="slider-img active" alt="Brown Belt 1">
+                    <img src="images/belt_brown_2.png" class="slider-img" alt="Brown Belt 2">
+                    <img src="images/belt_brown_3.png" class="slider-img" alt="Brown Belt 3">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 2)"></span>
+                    </div>
                 </div>
                 <div class="product-info">
                     <div class="product-brand">YJ Heritage</div>
                     <div class="product-name">Vintage Walnut</div>
                     <div class="product-price">₹1,699</div>
-                    <a href="checkout.html?product=Vintage Walnut Belt&price=₹1,699" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
-            <div class="product-card">
-                <div class="product-img">
-                    <img src="images/suede_belt_grey_1777199624586.png" alt="Grey Belt">
+
+            <!-- Grey Belt -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Modern&product=Slate Suede&price=₹1,899&imgBase=images/belt_grey&ext=png&desc=A contemporary slate grey suede belt. Adds a unique texture and modern touch to any outfit. Features a premium gunmetal finish buckle.'">
+                <div class="product-img slider-container">
+                    <img src="images/belt_grey.png" class="slider-img active" alt="Grey Belt 1">
+                    <img src="images/belt_grey_2.png" class="slider-img" alt="Grey Belt 2">
+                    <img src="images/belt_grey_3.png" class="slider-img" alt="Grey Belt 3">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 2)"></span>
+                    </div>
                 </div>
                 <div class="product-info">
                     <div class="product-brand">YJ Modern</div>
                     <div class="product-name">Slate Suede</div>
                     <div class="product-price">₹1,899</div>
-                    <a href="checkout.html?product=Slate Suede Belt&price=₹1,899" class="cta-button" style="display: block; margin-top: 15px; text-align: center; padding: 10px;">Buy Now</a>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
         </div>
