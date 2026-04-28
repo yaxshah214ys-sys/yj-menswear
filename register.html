@@ -7,8 +7,19 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header id="header" class="scrolled">
+    <header id="header">
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search products..." class="search-input" id="globalSearch">
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+            </ul>
+        </nav>
     </header>
 
     <main class="section" style="margin-top: 80px;">
@@ -39,6 +50,9 @@
         </div>
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
     <script>
         document.getElementById('registerForm').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -52,7 +66,23 @@
                 return;
             }
 
-            localStorage.setItem('registeredUser', JSON.stringify({ name, email, password }));
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            const userExists = users.some(u => u.email === email);
+            
+            if (userExists) {
+                alert("This email is already registered!");
+                return;
+            }
+
+            const newUser = { name, email, password };
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Sync with Firebase
+            if (typeof syncData !== 'undefined') {
+                syncData('users', users);
+            }
+
             alert("Registration successful! Please login.");
             window.location.href = 'login.html';
         });

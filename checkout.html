@@ -57,9 +57,13 @@
         const urlParams = new URLSearchParams(window.location.search);
         const productName = urlParams.get('product') || 'Selected Product';
         const productPrice = urlParams.get('price') || 'Contact for Price';
+        const qty = urlParams.get('qty') || 1;
 
-        document.getElementById('displayProductName').innerText = productName;
-        document.getElementById('displayProductPrice').innerText = productPrice;
+        const priceNum = parseInt(productPrice.replace(/[₹,]/g, ''));
+        const totalPrice = isNaN(priceNum) ? productPrice : `₹${(priceNum * qty).toLocaleString()}`;
+
+        document.getElementById('displayProductName').innerText = `${productName} (x${qty})`;
+        document.getElementById('displayProductPrice').innerText = totalPrice;
 
         // Auto-fill address if saved
         const storedAddress = JSON.parse(localStorage.getItem('userAddress')) || {};
@@ -80,8 +84,8 @@
             const instructions = document.getElementById('custNotes').value || 'None';
 
             const message = `*NEW ORDER - YJ MENSWEAR*%0A%0A` +
-                            `*Product:* ${productName}%0A` +
-                            `*Price:* ${productPrice}%0A%0A` +
+                            `*Product:* ${productName} (x${qty})%0A` +
+                            `*Total Price:* ${totalPrice}%0A%0A` +
                             `*Customer:* ${name}%0A` +
                             `*Contact:* ${phone}%0A%0A` +
                             `*Delivery Address:*%0A${address}, ${city} - ${pincode}%0A%0A` +
@@ -91,8 +95,8 @@
             const newOrder = {
                 id: '#YJ-' + Math.floor(1000 + Math.random() * 9000),
                 date: new Date().toLocaleDateString('en-IN'),
-                product: productName,
-                total: productPrice
+                product: `${productName} (x${qty})`,
+                total: totalPrice
             };
             const orders = JSON.parse(localStorage.getItem('userOrders')) || [];
             orders.push(newOrder);

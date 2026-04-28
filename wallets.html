@@ -7,8 +7,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header id="header" class="scrolled">
+    <header id="header">
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search wallets..." class="search-input" id="pageSearch">
+        </div>
+
         <nav>
             <ul>
                 <li><a href="cart.html" style="color: var(--primary);">Cart</a></li>
@@ -31,7 +37,7 @@
 
         <div class="product-grid">
             <!-- Black Wallet -->
-            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Luxury&product=Midnight Noir Bifold&price=₹2,499&imgBase=images/wallet_black&ext=png&desc=A classic bifold wallet crafted from premium full-grain leather. Features 8 card slots, dual currency compartments, and a sleek minimalist profile.'">
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Luxury&product=Premium Full-Grain Leather Wallet | RFID Protected | Luxury Bifold with 8 Card Slots - Obsidian Black&price=₹450&originalPrice=₹1,299&imgBase=images/wallet_black&ext=png&desc=Elevate your pocket essentials with this Midnight Noir Bifold. Crafted from 100% full-grain leather, it offers a sophisticated look while keeping your data safe with advanced RFID blocking technology. Features 8 precision card slots and a spacious currency compartment.'">
                 <div class="product-img slider-container">
                     <img src="images/wallet_black.png" class="slider-img active" alt="Black Wallet 1">
                     <img src="images/wallet_black_2.png" class="slider-img" alt="Black Wallet 2">
@@ -43,14 +49,18 @@
                     </div>
                 </div>
                 <div class="product-info">
-                    <div class="product-name">Midnight Noir Bifold</div>
-                    <div class="product-price">₹2,499</div>
+                    <div class="product-brand">YJ Luxury</div>
+                    <div class="product-name">Premium Full-Grain Leather Wallet | RFID Protected | Luxury Bifold - Obsidian Black</div>
+                    <div class="product-price">
+                        <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-right: 8px;">₹1,299</span>
+                        <span style="color: var(--primary);">₹450</span>
+                    </div>
                     <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
 
             <!-- Tan Wallet -->
-            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Luxury&product=Rustic Tan Slimfold&price=₹1,999&imgBase=images/wallet_tan&ext=png&desc=Elegant and functional. This rustic tan slimfold is perfect for the modern man. Hand-stitched for durability with a soft, natural leather finish.'">
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Luxury&product=Vintage Hand-Burnished Leather Wallet | Slim Minimalist Design | Hand-Stitched Finish - Rustic Tan&price=₹399&originalPrice=₹999&imgBase=images/wallet_tan&ext=png&desc=A masterpiece of craftsmanship, this Rustic Tan Slimfold is hand-burnished for a unique vintage look that ages beautifully over time. Its minimalist profile fits comfortably in any pocket without adding bulk. Durable hand-stitched edges ensure it lasts for years.'">
                 <div class="product-img slider-container">
                     <img src="images/wallet_tan.png" class="slider-img active" alt="Tan Wallet 1">
                     <img src="images/wallet_tan_2.png" class="slider-img" alt="Tan Wallet 2">
@@ -62,8 +72,12 @@
                     </div>
                 </div>
                 <div class="product-info">
-                    <div class="product-name">Rustic Tan Slimfold</div>
-                    <div class="product-price">₹1,999</div>
+                    <div class="product-brand">YJ Luxury</div>
+                    <div class="product-name">Vintage Hand-Burnished Leather Wallet | Slim Minimalist Design - Rustic Tan</div>
+                    <div class="product-price">
+                        <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-right: 8px;">₹999</span>
+                        <span style="color: var(--primary);">₹399</span>
+                    </div>
                     <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>

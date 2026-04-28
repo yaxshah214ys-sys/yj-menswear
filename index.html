@@ -7,8 +7,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body id="home">
-    <header id="header" class="scrolled">
-        <div class="logo">YJ Menswear</div>
+    <header id="header">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+        
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search perfumes, wallets, belts..." class="search-input" id="globalSearch">
+        </div>
+
         <nav>
             <ul>
                 <li><a href="cart.html" style="color: var(--primary);">Cart</a></li>
@@ -92,6 +98,8 @@
             &copy; 2026 YJ Menswear. All Rights Reserved.
         </div>
     </footer>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

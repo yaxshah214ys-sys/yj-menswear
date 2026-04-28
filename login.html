@@ -7,8 +7,19 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header id="header" class="scrolled">
+    <header id="header">
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search products..." class="search-input" id="globalSearch">
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+            </ul>
+        </nav>
     </header>
 
     <main class="section" style="margin-top: 80px;">
@@ -37,6 +48,9 @@
         </div>
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
     <script>
         function forgotPassword() {
             const userEmail = prompt("Please enter your registered email address:");
@@ -51,11 +65,12 @@
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            const storedUser = JSON.parse(localStorage.getItem('registeredUser'));
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
 
-            if (storedUser && storedUser.email === email && storedUser.password === password) {
+            if (user) {
                 localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('currentUser', storedUser.name);
+                localStorage.setItem('currentUser', JSON.stringify(user));
                 const urlParams = new URLSearchParams(window.location.search);
                 const redirect = urlParams.get('redirect');
                 window.location.href = redirect ? decodeURIComponent(redirect) : 'dashboard-orders.html';

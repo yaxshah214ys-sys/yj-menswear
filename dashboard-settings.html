@@ -7,10 +7,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header id="header" class="scrolled">
+    <header id="header">
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search..." class="search-input" id="globalSearch">
+        </div>
+
         <nav>
             <ul>
+                <li><a href="cart.html">Cart</a></li>
                 <li><a href="dashboard-orders.html" style="color: var(--primary);">Account</a></li>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="#" onclick="logout()">Logout</a></li>
@@ -18,52 +25,105 @@
         </nav>
     </header>
 
-    <main class="section" style="margin-top: 80px;">
+    <main class="section" style="margin-top: 100px;">
         <div class="dashboard-grid">
             <aside class="sidebar-nav">
                 <ul>
                     <li><a href="dashboard-orders.html">My Orders</a></li>
-                    <li class="active"><a href="dashboard-settings.html">Account Settings</a></li>
-                    <li><a href="dashboard-address.html">Shipping Address</a></li>
                     <li><a href="dashboard-wishlist.html">Wishlist</a></li>
+                    <li><a href="dashboard-address.html">Shipping Address</a></li>
+                    <li class="active"><a href="dashboard-settings.html">Account Settings</a></li>
                 </ul>
             </aside>
+
             <div class="dashboard-content">
-                <div style="background: var(--bg-card); padding: 30px; border: 1px solid var(--glass);">
-                    <h3 style="margin-bottom: 20px; color: var(--primary);">Update Profile</h3>
-                    <form id="settingsForm">
-                        <div class="form-group"><label>Full Name</label><input type="text" id="setName" required></div>
-                        <div class="form-group"><label>Email Address</label><input type="email" id="setEmail" required></div>
-                        <button type="submit" class="cta-button">Save Profile</button>
-                    </form>
-                    <div style="margin: 40px 0; border-top: 1px solid var(--glass);"></div>
-                    <h3 style="margin-bottom: 20px; color: var(--primary);">Security</h3>
-                    <form id="passwordForm">
-                        <div class="form-group"><label>New Password</label><input type="password" id="newPassword" required></div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <button type="submit" class="cta-button">Change Password</button>
-                            <a href="#" onclick="forgotPassword()" style="color: var(--primary); font-size: 0.8rem;">Forgot Password?</a>
-                        </div>
-                    </form>
+                <div class="dashboard-header">
+                    <h2>Account Settings</h2>
+                </div>
+                
+                <form id="settingsForm" class="form-container" style="margin: 0; max-width: 600px; background: transparent; border: none; padding: 0;">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="userName" placeholder="Your Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="userEmail" placeholder="Your Email" disabled style="opacity: 0.6; cursor: not-allowed;">
+                        <small style="color: var(--text-muted);">Email cannot be changed.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPass" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="confirmPass" placeholder="Confirm new password">
+                    </div>
+                    <button type="submit" class="cta-button" style="width: auto;">Update Profile</button>
+                </form>
+
+                <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--glass);">
+                    <h3 style="color: #ff4757; margin-bottom: 15px;">Danger Zone</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">Once you delete your account, there is no going back. Please be certain.</p>
+                    <button onclick="deleteAccount()" class="cta-button" style="background: transparent; border-color: #ff4757; color: #ff4757;">Delete Account</button>
                 </div>
             </div>
         </div>
     </main>
 
+    <footer style="margin-top: 50px;">
+        <div class="footer-bottom">
+            &copy; 2026 YJ Menswear. All Rights Reserved.
+        </div>
+    </footer>
+
     <script src="script.js"></script>
     <script>
-        function forgotPassword() {
-            window.location.href = "mailto:yashshah2140@gmail.com?subject=Password%20Reset";
-        }
-        const user = JSON.parse(localStorage.getItem('registeredUser'));
-        if (user) { document.getElementById('setName').value = user.name; document.getElementById('setEmail').value = user.email; }
-        document.getElementById('settingsForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            user.name = document.getElementById('setName').value;
-            user.email = document.getElementById('setEmail').value;
-            localStorage.setItem('registeredUser', JSON.stringify(user));
-            alert("Profile updated!");
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('currentUser')) || {};
+            document.getElementById('userName').value = user.name || '';
+            document.getElementById('userEmail').value = user.email || '';
+
+            document.getElementById('settingsForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newName = document.getElementById('userName').value;
+                const newPass = document.getElementById('newPass').value;
+                const confirmPass = document.getElementById('confirmPass').value;
+
+                if (newPass && newPass !== confirmPass) {
+                    alert('Passwords do not match!');
+                    return;
+                }
+
+                // Update user in localStorage
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                const userIndex = users.findIndex(u => u.email === user.email);
+                
+                if (userIndex !== -1) {
+                    users[userIndex].name = newName;
+                    if (newPass) users[userIndex].password = newPass;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Update current session
+                    user.name = newName;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    
+                    alert('Profile updated successfully!');
+                }
+            });
         });
+
+        function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                users = users.filter(u => u.email !== user.email);
+                localStorage.setItem('users', JSON.stringify(users));
+                logout();
+            }
+        }
+
+        // Global logout will be used from script.js
     </script>
 </body>
 </html>

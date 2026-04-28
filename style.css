@@ -26,20 +26,49 @@ header {
     position: fixed;
     top: 0;
     width: 100%;
-    padding: 1.5rem 5%;
+    padding: 15px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 1000;
-    background: transparent;
+    transition: var(--transition);
+    background: rgba(18, 18, 18, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass);
+}
+
+.search-container {
+    flex: 1;
+    max-width: 400px;
+    margin: 0 30px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass);
+    border-radius: 20px;
+    color: var(--text);
+    font-family: inherit;
     transition: var(--transition);
 }
 
-header.scrolled {
-    background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(20px);
-    padding: 1rem 5%;
-    border-bottom: 1px solid var(--glass);
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(196, 164, 132, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.9rem;
 }
 
 .logo {
@@ -123,14 +152,101 @@ nav a:hover { color: var(--primary); }
 .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: var(--bg-main); border: 1px solid var(--glass); color: white; font-family: inherit; }
 .form-group input:focus { border-color: var(--primary); outline: none; }
 
-.dashboard-grid { display: grid; grid-template-columns: 250px 1fr; gap: 40px; }
-.sidebar-nav li { border-bottom: 1px solid var(--glass); transition: var(--transition); }
-.sidebar-nav li a { display: block; padding: 15px; text-decoration: none; color: var(--text-main); transition: var(--transition); }
-.sidebar-nav li:hover, .sidebar-nav li:hover a, .sidebar-nav li.active, .sidebar-nav li.active a { background: var(--glass); color: var(--primary); }
+/* Dashboard Styles */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-.order-history-table { width: 100%; border-collapse: collapse; }
-.order-history-table th, .order-history-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--glass); }
-.status-badge { padding: 5px 10px; font-size: 0.75rem; text-transform: uppercase; border-radius: 4px; background: rgba(0, 123, 255, 0.2); color: #007bff; }
+.sidebar-nav {
+    background: var(--bg-card);
+    border: 1px solid var(--glass);
+    border-radius: 10px;
+    padding: 20px;
+    height: fit-content;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav li {
+    margin-bottom: 10px;
+}
+
+.sidebar-nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    display: block;
+    padding: 12px 15px;
+    border-radius: 5px;
+    transition: var(--transition);
+}
+
+.sidebar-nav li.active a,
+.sidebar-nav a:hover {
+    background: rgba(196, 164, 132, 0.1);
+    color: var(--primary);
+}
+
+.dashboard-content {
+    background: var(--bg-card);
+    border: 1px solid var(--glass);
+    border-radius: 10px;
+    padding: 40px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--glass);
+    padding-bottom: 20px;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.order-table th, 
+.order-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--glass);
+}
+
+.order-table th {
+    color: var(--primary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.order-table tr:last-child td {
+    border-bottom: none;
+}
+
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-shipped { background: rgba(76, 175, 80, 0.1); color: #4caf50; }
+.status-processing { background: rgba(255, 152, 0, 0.1); color: #ff9800; }
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
 footer { padding: 40px 5%; background: var(--bg-card); border-top: 1px solid var(--glass); text-align: center; }
 .footer-bottom { color: var(--text-muted); font-size: 0.8rem; }

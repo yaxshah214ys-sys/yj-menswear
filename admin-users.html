@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | YJ Menswear</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-section {
+            background: var(--bg-card);
+            border: 1px solid var(--glass);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .admin-table th, .admin-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass);
+        }
+        .admin-table th {
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .admin-table tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid var(--glass);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+        <div style="color: var(--primary); font-weight: 700; text-transform: uppercase;">Owner Dashboard</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="section" style="margin-top: 100px;">
+        <div class="section-title">
+            <h2>Business Overview</h2>
+            <div class="line"></div>
+        </div>
+
+        <div style="max-width: 1000px; margin: 0 auto; margin-bottom: 20px; display: flex; gap: 10px;">
+            <button onclick="restoreAdmin()" class="cta-button" style="background: #27ae60; border-color: #27ae60; color: #fff; padding: 10px 20px;">Restore Admin Account</button>
+            <button onclick="exportData()" class="tab-btn">Export Data</button>
+        </div>
+
+        <div style="max-width: 1100px; margin: 0 auto;">
+            <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                <button onclick="showTab('customers')" id="custTab" class="tab-btn active">Customers</button>
+                <button onclick="showTab('orders')" id="orderTab" class="tab-btn">Orders Received</button>
+            </div>
+
+            <!-- Customers Section -->
+            <div id="customersSec" class="admin-section">
+                <h3>Registered Customers</h3>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Password</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Orders Section -->
+            <div id="ordersSec" class="admin-section" style="display: none;">
+                <h3>Order History</h3>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAll();
+        });
+
+        function showTab(tab) {
+            document.getElementById('customersSec').style.display = tab === 'customers' ? 'block' : 'none';
+            document.getElementById('ordersSec').style.display = tab === 'orders' ? 'block' : 'none';
+            document.getElementById('custTab').classList.toggle('active', tab === 'customers');
+            document.getElementById('orderTab').classList.toggle('active', tab === 'orders');
+        }
+
+        async function loadAll() {
+            // Fetch latest from Firebase
+            if (typeof getData !== 'undefined') {
+                const fbUsers = await getData('users');
+                if (fbUsers) localStorage.setItem('users', JSON.stringify(fbUsers));
+                
+                const fbOrders = await getData('allOrders');
+                if (fbOrders) localStorage.setItem('allOrders', JSON.stringify(fbOrders));
+            }
+            
+            loadUsers();
+            loadOrders();
+        }
+
+        function loadUsers() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const container = document.getElementById('userList');
+            if (users.length === 0) {
+                container.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--text-muted);">No customers yet.</td></tr>';
+                return;
+            }
+            container.innerHTML = users.map((u, i) => `
+                <tr>
+                    <td>${u.name}</td>
+                    <td>${u.email}</td>
+                    <td><code>${u.password}</code></td>
+                    <td><button onclick="deleteItem('users', ${i})" style="color: #ff4d4d; background: transparent; border: none; cursor: pointer;">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function loadOrders() {
+            const orders = JSON.parse(localStorage.getItem('allOrders') || '[]');
+            const container = document.getElementById('orderList');
+            if (orders.length === 0) {
+                container.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--text-muted);">No orders received yet.</td></tr>';
+                return;
+            }
+            container.innerHTML = orders.reverse().map((o, i) => `
+                <tr>
+                    <td>#${o.id}</td>
+                    <td>${o.customer}</td>
+                    <td style="font-size: 0.85rem; color: var(--text-muted);">${o.items}</td>
+                    <td style="color: var(--primary); font-weight: 700;">${o.total}</td>
+                    <td>${o.date}</td>
+                    <td><button onclick="deleteItem('allOrders', ${i})" style="color: #ff4d4d; background: transparent; border: none; cursor: pointer;">Clear</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteItem(key, index) {
+            if (confirm('Are you sure?')) {
+                let items = JSON.parse(localStorage.getItem(key) || '[]');
+                items.splice(index, 1);
+                localStorage.setItem(key, JSON.stringify(items));
+                
+                // Sync to Firebase
+                if (typeof syncData !== 'undefined') {
+                    await syncData(key, items);
+                }
+                
+                loadAll();
+            }
+        }
+
+        function restoreAdmin() {
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            const adminEmail = 'yashshah2140@gmail.com';
+            
+            if (!users.some(u => u.email === adminEmail)) {
+                users.push({
+                    name: 'Yash Shah (Owner)',
+                    email: adminEmail,
+                    password: 'Admin@123'
+                });
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Sync to Firebase
+                if (typeof syncData !== 'undefined') {
+                    syncData('users', users);
+                }
+
+                alert('Admin account restored! Password: Admin@123');
+                loadAll();
+            } else {
+                alert('Admin account already exists in the list.');
+            }
+        }
+
+        function exportData() {
+            const users = localStorage.getItem('users');
+            const orders = localStorage.getItem('allOrders');
+            const data = { users: JSON.parse(users), orders: JSON.parse(orders) };
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'yj_menswear_backup.json';
+            a.click();
+        }
+    </script>
+</body>
+</html>

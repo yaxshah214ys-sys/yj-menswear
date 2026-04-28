@@ -7,10 +7,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header id="header" class="scrolled">
+    <header id="header">
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search..." class="search-input" id="globalSearch">
+        </div>
+
         <nav>
             <ul>
+                <li><a href="cart.html">Cart</a></li>
                 <li><a href="dashboard-orders.html" style="color: var(--primary);">Account</a></li>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="#" onclick="logout()">Logout</a></li>
@@ -18,49 +25,90 @@
         </nav>
     </header>
 
-    <main class="section" style="margin-top: 80px;">
+    <main class="section" style="margin-top: 100px;">
         <div class="dashboard-grid">
             <aside class="sidebar-nav">
                 <ul>
                     <li><a href="dashboard-orders.html">My Orders</a></li>
-                    <li><a href="dashboard-settings.html">Account Settings</a></li>
-                    <li class="active"><a href="dashboard-address.html">Shipping Address</a></li>
                     <li><a href="dashboard-wishlist.html">Wishlist</a></li>
+                    <li class="active"><a href="dashboard-address.html">Shipping Address</a></li>
+                    <li><a href="dashboard-settings.html">Account Settings</a></li>
                 </ul>
             </aside>
+
             <div class="dashboard-content">
-                <div style="background: var(--bg-card); padding: 30px; border: 1px solid var(--glass);">
-                    <h3 style="margin-bottom: 20px; color: var(--primary);">Shipping Address</h3>
-                    <form id="addressForm">
-                        <div class="form-group"><label>Street</label><input type="text" id="setAddress" required></div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="form-group"><label>City</label><input type="text" id="setCity" required></div>
-                            <div class="form-group"><label>Pincode</label><input type="text" id="setPincode" required></div>
-                        </div>
-                        <button type="submit" class="cta-button">Save Address</button>
-                    </form>
+                <div class="dashboard-header">
+                    <h2>Shipping Address</h2>
                 </div>
+                
+                <form id="addressForm" class="form-container" style="margin: 0; max-width: 100%; background: transparent; border: none; padding: 0;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="addrName" placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" id="addrPhone" placeholder="Enter your phone number">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Street Address</label>
+                        <input type="text" id="addrStreet" placeholder="House No, Building, Street">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" id="addrCity" placeholder="City">
+                        </div>
+                        <div class="form-group">
+                            <label>State</label>
+                            <input type="text" id="addrState" placeholder="State">
+                        </div>
+                        <div class="form-group">
+                            <label>Pincode</label>
+                            <input type="text" id="addrPincode" placeholder="Pincode">
+                        </div>
+                    </div>
+                    <button type="submit" class="cta-button" style="width: auto;">Save Address</button>
+                </form>
             </div>
         </div>
     </main>
 
+    <footer style="margin-top: 50px;">
+        <div class="footer-bottom">
+            &copy; 2026 YJ Menswear. All Rights Reserved.
+        </div>
+    </footer>
+
     <script src="script.js"></script>
     <script>
-        const addr = JSON.parse(localStorage.getItem('userAddress')) || {};
-        if (addr.street) { 
-            document.getElementById('setAddress').value = addr.street;
-            document.getElementById('setCity').value = addr.city;
-            document.getElementById('setPincode').value = addr.pincode;
-        }
-        document.getElementById('addressForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            localStorage.setItem('userAddress', JSON.stringify({
-                street: document.getElementById('setAddress').value,
-                city: document.getElementById('setCity').value,
-                pincode: document.getElementById('setPincode').value
-            }));
-            alert("Address saved!");
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedAddress = JSON.parse(localStorage.getItem('userAddress')) || {};
+            document.getElementById('addrName').value = savedAddress.name || '';
+            document.getElementById('addrPhone').value = savedAddress.phone || '';
+            document.getElementById('addrStreet').value = savedAddress.street || '';
+            document.getElementById('addrCity').value = savedAddress.city || '';
+            document.getElementById('addrState').value = savedAddress.state || '';
+            document.getElementById('addrPincode').value = savedAddress.pincode || '';
+
+            document.getElementById('addressForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const address = {
+                    name: document.getElementById('addrName').value,
+                    phone: document.getElementById('addrPhone').value,
+                    street: document.getElementById('addrStreet').value,
+                    city: document.getElementById('addrCity').value,
+                    state: document.getElementById('addrState').value,
+                    pincode: document.getElementById('addrPincode').value
+                };
+                localStorage.setItem('userAddress', JSON.stringify(address));
+                alert('Address saved successfully!');
+            });
         });
+
+        // Global logout will be used from script.js
     </script>
 </body>
 </html>

@@ -7,10 +7,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header id="header" class="scrolled">
+    <header id="header">
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search orders..." class="search-input" id="globalSearch">
+        </div>
+
         <nav>
             <ul>
+                <li><a href="cart.html">Cart</a></li>
                 <li><a href="dashboard-orders.html" style="color: var(--primary);">Account</a></li>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="#" onclick="logout()">Logout</a></li>
@@ -18,39 +25,84 @@
         </nav>
     </header>
 
-    <main class="section" style="margin-top: 80px;">
+    <main class="section" style="margin-top: 100px;">
         <div class="dashboard-grid">
             <aside class="sidebar-nav">
                 <ul>
                     <li class="active"><a href="dashboard-orders.html">My Orders</a></li>
-                    <li><a href="dashboard-settings.html">Account Settings</a></li>
-                    <li><a href="dashboard-address.html">Shipping Address</a></li>
                     <li><a href="dashboard-wishlist.html">Wishlist</a></li>
+                    <li><a href="dashboard-address.html">Shipping Address</a></li>
+                    <li><a href="dashboard-settings.html">Account Settings</a></li>
                 </ul>
             </aside>
+
             <div class="dashboard-content">
-                <div style="background: var(--bg-card); padding: 30px; border: 1px solid var(--glass);">
-                    <h3 style="margin-bottom: 20px; color: var(--primary);">Order History</h3>
-                    <div id="orderContainer"></div>
+                <div class="dashboard-header">
+                    <h2>My Orders</h2>
+                    <span id="welcomeUser" style="color: var(--text-muted);">Welcome, User</span>
+                </div>
+                
+                <div id="orderContainer">
+                    <!-- Orders will be loaded here -->
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <p>No orders found in your history.</p>
+                        <a href="perfumes.html" class="cta-button" style="display: inline-block; margin-top: 20px;">Start Shopping</a>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <footer style="margin-top: 50px;">
+        <div class="footer-bottom">
+            &copy; 2026 YJ Menswear. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
     <script>
-        const orders = JSON.parse(localStorage.getItem('userOrders')) || [];
-        const container = document.getElementById('orderContainer');
-        if (orders.length === 0) {
-            container.innerHTML = "<p>No orders yet.</p>";
-        } else {
-            let html = "<table class='order-history-table'><thead><tr><th>ID</th><th>Date</th><th>Item</th><th>Price</th></tr></thead><tbody>";
-            orders.reverse().forEach(o => {
-                html += `<tr><td>${o.id}</td><td>${o.date}</td><td>${o.product}</td><td>${o.total}</td></tr>`;
-            });
-            html += "</tbody></table>";
-            container.innerHTML = html;
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('currentUser')) || { name: 'Guest' };
+            document.getElementById('welcomeUser').innerText = `Welcome, ${user.name}`;
+
+            const orders = JSON.parse(localStorage.getItem('userOrders')) || [];
+            const container = document.getElementById('orderContainer');
+
+            if (orders.length > 0) {
+                let html = `
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                orders.reverse().forEach(order => {
+                    html += `
+                        <tr>
+                            <td>#${order.id}</td>
+                            <td>${order.date}</td>
+                            <td>${order.product}</td>
+                            <td>${order.total}</td>
+                            <td><span class="status-badge status-processing">Processing</span></td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+            }
+        });
+
+        // Global logout will be used from script.js
     </script>
 </body>
 </html>

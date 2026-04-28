@@ -7,8 +7,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header id="header" class="scrolled">
+    <header id="header">
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search belts..." class="search-input" id="pageSearch">
+        </div>
+
         <nav>
             <ul>
                 <li><a href="cart.html" style="color: var(--primary);">Cart</a></li>
@@ -31,7 +37,7 @@
 
         <div class="product-grid">
             <!-- Black Belt -->
-            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Classic&product=Full Grain Black&price=₹1,499&imgBase=images/belt_black&ext=png&desc=A versatile full-grain black leather belt featuring a polished silver buckle. Essential for formal attire and everyday professional wear.'">
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Classic&product=Formal Full-Grain Leather Belt | Polished Silver Buckle | Hand-Finished Professional Edge - Midnight Black&price=₹350&originalPrice=₹899&imgBase=images/belt_black&ext=png&desc=A quintessential accessory for the modern professional. This Midnight Black Formal belt is crafted from 100% genuine full-grain leather, ensuring both style and longevity. It features a high-grade polished silver buckle and hand-finished edges for a smooth, premium feel. Ideal for formal suits and daily office wear.'">
                 <div class="product-img slider-container">
                     <img src="images/belt_black.png" class="slider-img active" alt="Black Belt 1">
                     <img src="images/belt_black_2.png" class="slider-img" alt="Black Belt 2">
@@ -44,14 +50,17 @@
                 </div>
                 <div class="product-info">
                     <div class="product-brand">YJ Classic</div>
-                    <div class="product-name">Full Grain Black</div>
-                    <div class="product-price">₹1,499</div>
+                    <div class="product-name">Formal Full-Grain Leather Belt | Polished Silver Buckle - Midnight Black</div>
+                    <div class="product-price">
+                        <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-right: 8px;">₹899</span>
+                        <span style="color: var(--primary);">₹350</span>
+                    </div>
                     <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
 
             <!-- Brown Belt -->
-            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Heritage&product=Vintage Walnut&price=₹1,699&imgBase=images/belt_brown&ext=png&desc=A rich walnut brown belt with a vintage textured finish. Perfect for pairing with chinos and casual leather shoes.'">
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Heritage&product=Heritage Walnut Leather Belt | Textured Vintage Finish | Premium Brass Buckle - Rustic Brown&price=₹399&originalPrice=₹999&imgBase=images/belt_brown&ext=png&desc=Inspired by traditional leathercraft, the Vintage Walnut belt features a rich, deep-toned finish with natural textures that add character to your outfit. The solid brass buckle complements the earthy walnut brown, making it a perfect match for chinos, denims, and casual shoes.'">
                 <div class="product-img slider-container">
                     <img src="images/belt_brown.png" class="slider-img active" alt="Brown Belt 1">
                     <img src="images/belt_brown_2.png" class="slider-img" alt="Brown Belt 2">
@@ -64,14 +73,17 @@
                 </div>
                 <div class="product-info">
                     <div class="product-brand">YJ Heritage</div>
-                    <div class="product-name">Vintage Walnut</div>
-                    <div class="product-price">₹1,699</div>
+                    <div class="product-name">Heritage Walnut Leather Belt | Textured Vintage Finish - Rustic Brown</div>
+                    <div class="product-price">
+                        <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-right: 8px;">₹999</span>
+                        <span style="color: var(--primary);">₹399</span>
+                    </div>
                     <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>
 
             <!-- Grey Belt -->
-            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Modern&product=Slate Suede&price=₹1,899&imgBase=images/belt_grey&ext=png&desc=A contemporary slate grey suede belt. Adds a unique texture and modern touch to any outfit. Features a premium gunmetal finish buckle.'">
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Modern&product=Contemporary Slate Suede Belt | Modern Texture Design | Gunmetal Finish Buckle - Ash Grey&price=₹499&originalPrice=₹1,299&imgBase=images/belt_grey&ext=png&desc=Redefine your style with the Ash Grey Slate Suede belt. This modern piece features a soft suede texture that offers a sophisticated alternative to smooth leather. The sleek gunmetal buckle provides a minimalist, contemporary look. Perfect for adding a refined touch to semi-formal and casual ensembles.'">
                 <div class="product-img slider-container">
                     <img src="images/belt_grey.png" class="slider-img active" alt="Grey Belt 1">
                     <img src="images/belt_grey_2.png" class="slider-img" alt="Grey Belt 2">
@@ -84,8 +96,11 @@
                 </div>
                 <div class="product-info">
                     <div class="product-brand">YJ Modern</div>
-                    <div class="product-name">Slate Suede</div>
-                    <div class="product-price">₹1,899</div>
+                    <div class="product-name">Contemporary Slate Suede Belt | Modern Texture Design - Ash Grey</div>
+                    <div class="product-price">
+                        <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-right: 8px;">₹1,299</span>
+                        <span style="color: var(--primary);">₹499</span>
+                    </div>
                     <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
                 </div>
             </div>

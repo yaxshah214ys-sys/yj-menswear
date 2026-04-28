@@ -7,8 +7,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header id="header" class="scrolled">
+    <header id="header">
         <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search products..." class="search-input" id="globalSearch">
+        </div>
+
         <nav>
             <ul>
                 <li><a href="cart.html" id="cartCount" style="color: var(--primary);">Cart (0)</a></li>
@@ -45,6 +51,8 @@
         <div class="footer-bottom">&copy; 2026 YJ Menswear. All Rights Reserved.</div>
     </footer>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
     <script>
         function loadCart() {
@@ -123,6 +131,20 @@
             message += `\nTotal Amount: ₹${total.toLocaleString()}`;
             
             const whatsappUrl = `https://wa.me/7984822059?text=${encodeURIComponent(message)}`;
+            
+            // Save order for admin tracking
+            let allOrders = JSON.parse(localStorage.getItem('allOrders') || '[]');
+            const user = JSON.parse(localStorage.getItem('currentUser')) || { name: 'Guest' };
+            allOrders.push({
+                id: Date.now().toString().slice(-6),
+                customer: user.name,
+                email: user.email || 'N/A',
+                items: cartItems.map(i => `${i.name} x ${i.quantity || 1}`).join(', '),
+                total: `₹${total.toLocaleString()}`,
+                date: new Date().toLocaleString()
+            });
+            localStorage.setItem('allOrders', JSON.stringify(allOrders));
+            
             window.open(whatsappUrl, '_blank');
         }
 
