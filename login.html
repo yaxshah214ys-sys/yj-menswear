@@ -31,11 +31,14 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" id="loginEmail" placeholder="yashshah2140@gmail.com" required>
+                    <input type="email" id="loginEmail" placeholder="your@email.com" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    <div style="position: relative;">
+                        <input type="password" id="loginPassword" placeholder="Enter Password" required style="padding-right: 40px;">
+                        <span id="toggleLoginPassword" onclick="togglePassword('loginPassword', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted); font-size: 0.9rem;">👁️</span>
+                    </div>
                     <div style="text-align: right; margin-top: 5px;">
                         <a href="#" onclick="forgotPassword()" style="font-size: 0.8rem; color: var(--primary); text-decoration: none;">Forgot Password?</a>
                     </div>
@@ -61,21 +64,51 @@
             }
         }
 
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            const user = users.find(u => u.email === email && u.password === password);
+            
+            const submitBtn = e.target.querySelector('button');
+            submitBtn.innerText = "Checking...";
+            submitBtn.disabled = true;
 
-            if (user) {
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                const urlParams = new URLSearchParams(window.location.search);
-                const redirect = urlParams.get('redirect');
-                window.location.href = redirect ? decodeURIComponent(redirect) : 'dashboard-orders.html';
-            } else {
-                alert("Invalid email or password. Please register first.");
+            try {
+                // Fetch latest from Firebase to handle multi-device login
+                if (typeof getData !== 'undefined') {
+                    const fbUsers = await getData('users');
+                    if (fbUsers) {
+                        localStorage.setItem('users', JSON.stringify(fbUsers));
+                    }
+                }
+
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
+
+                if (user) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirect = urlParams.get('redirect');
+                    window.location.href = redirect ? decodeURIComponent(redirect) : 'dashboard-orders.html';
+                } else {
+                    if (typeof showToast !== 'undefined') {
+                        showToast("Invalid email or password.");
+                    } else {
+                        alert("Invalid email or password.");
+                    }
+                    submitBtn.innerText = "Login";
+                    submitBtn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                if (typeof showToast !== 'undefined') {
+                    showToast("Connection error.");
+                } else {
+                    alert("Connection error.");
+                }
+                submitBtn.innerText = "Login";
+                submitBtn.disabled = false;
             }
         });
     </script>

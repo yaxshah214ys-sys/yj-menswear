@@ -48,17 +48,62 @@ function logout() {
 function handlePurchase(e, redirectUrl) {
     if (!isLoggedIn()) {
         e.preventDefault();
-        alert("Please login to continue with your purchase.");
         window.location.href = `login.html?redirect=${encodeURIComponent(redirectUrl)}`;
     }
 }
 
-// Global Auth Check for Protected Pages
-document.querySelectorAll('a[href*="checkout.html"], a[href*="dashboard-"]').forEach(btn => {
+// Global Auth Check for Protected Pages (Dashboard and Account only)
+document.querySelectorAll('a[href*="dashboard-"]').forEach(btn => {
     btn.addEventListener('click', (e) => {
         handlePurchase(e, btn.getAttribute('href'));
     });
 });
+
+// Toast Notification System
+function showToast(message) {
+    // Remove existing toast if any
+    const existing = document.getElementById('yj-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'yj-toast';
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary);
+        color: #000;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px var(--primary);
+        z-index: 9999;
+        animation: slideUpFade 0.5s ease forwards;
+    `;
+    toast.innerText = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'slideDownFade 0.5s ease forwards';
+        setTimeout(() => toast.remove(), 500);
+    }, 2000);
+}
+
+// Add these animations
+const styleSheet = document.createElement('style');
+styleSheet.innerHTML = `
+    @keyframes slideUpFade {
+        from { opacity: 0; transform: translate(-50%, 20px); }
+        to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    @keyframes slideDownFade {
+        from { opacity: 1; transform: translate(-50%, 0); }
+        to { opacity: 0; transform: translate(-50%, 20px); }
+    }
+`;
+document.head.appendChild(styleSheet);
 
 // Header scroll effect
 window.addEventListener('scroll', () => {
@@ -81,6 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const query = globalSearch.value.toLowerCase();
                 if (query.includes('wallet')) window.location.href = `wallets.html?search=${query}`;
                 else if (query.includes('belt')) window.location.href = `belts.html?search=${query}`;
+                else if (query.includes('watch')) window.location.href = `watches.html?search=${query}`;
+                else if (query.includes('sunglass')) window.location.href = `sunglasses.html?search=${query}`;
                 else window.location.href = `perfumes.html?search=${query}`;
             }
         });
@@ -125,6 +172,17 @@ function filterProducts(query) {
             card.style.display = 'none';
         }
     });
+}
+
+function togglePassword(inputId, iconElement) {
+    const passwordInput = document.getElementById(inputId);
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        iconElement.innerText = '👁️‍🗨️';
+    } else {
+        passwordInput.type = 'password';
+        iconElement.innerText = '👁️';
+    }
 }
 
 // Slider Logic

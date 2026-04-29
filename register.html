@@ -31,15 +31,18 @@
             <form id="registerForm">
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" id="regName" placeholder="Full Name" required>
+                    <input type="text" id="regName" placeholder="Enter Your Name" required>
                 </div>
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" id="regEmail" placeholder="Email" required>
+                    <input type="email" id="regEmail" placeholder="Enter Your Email" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="regPassword" placeholder="e.g. Yash@123" required>
+                    <div style="position: relative;">
+                        <input type="password" id="regPassword" placeholder="Create Password" required style="padding-right: 40px;">
+                        <span id="toggleRegPassword" onclick="togglePassword('regPassword', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted); font-size: 0.9rem;">👁️</span>
+                    </div>
                     <small style="color: var(--text-muted); font-size: 0.75rem;">Min 8 chars, 1 Uppercase, 1 Number, 1 Special Char</small>
                 </div>
                 <button type="submit" class="cta-button" style="width: 100%; margin-top: 20px;">Register</button>
@@ -54,37 +57,75 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
     <script>
-        document.getElementById('registerForm').addEventListener('submit', (e) => {
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
 
+            const submitBtn = e.target.querySelector('button');
+            submitBtn.innerText = "Registering...";
+            submitBtn.disabled = true;
+
             const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
             if (!passwordRegex.test(password)) {
-                alert("Password too weak! Min 8 chars, 1 Uppercase, 1 Number, 1 Special Char.");
+                if (typeof showToast !== 'undefined') {
+                    showToast("Password too weak!");
+                } else {
+                    alert("Password too weak!");
+                }
+                submitBtn.innerText = "Register";
+                submitBtn.disabled = false;
                 return;
             }
 
-            let users = JSON.parse(localStorage.getItem('users') || '[]');
-            const userExists = users.some(u => u.email === email);
-            
-            if (userExists) {
-                alert("This email is already registered!");
-                return;
-            }
+            try {
+                // Fetch latest from Firebase
+                if (typeof getData !== 'undefined') {
+                    const fbUsers = await getData('users');
+                    if (fbUsers) {
+                        localStorage.setItem('users', JSON.stringify(fbUsers));
+                    }
+                }
 
-            const newUser = { name, email, password };
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            // Sync with Firebase
-            if (typeof syncData !== 'undefined') {
-                syncData('users', users);
-            }
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                const userExists = users.some(u => u.email === email);
+                
+                if (userExists) {
+                    if (typeof showToast !== 'undefined') {
+                        showToast("Email already registered!");
+                    } else {
+                        alert("Email already registered!");
+                    }
+                    window.location.href = 'login.html';
+                    return;
+                }
 
-            alert("Registration successful! Please login.");
-            window.location.href = 'login.html';
+                const newUser = { name, email, password };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Sync with Firebase Cloud
+                if (typeof syncData !== 'undefined') {
+                    await syncData('users', users);
+                }
+
+                if (typeof showToast !== 'undefined') {
+                    showToast("Registration successful!");
+                } else {
+                    alert("Registration successful!");
+                }
+                window.location.href = 'login.html';
+            } catch (err) {
+                console.error(err);
+                if (typeof showToast !== 'undefined') {
+                    showToast("Registration failed.");
+                } else {
+                    alert("Registration failed.");
+                }
+                submitBtn.innerText = "Register";
+                submitBtn.disabled = false;
+            }
         });
     </script>
 </body>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Watches | YJ Menswear</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search watches..." class="search-input" id="pageSearch">
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="cart.html" style="color: var(--primary);">Cart</a></li>
+                <li><a href="dashboard-orders.html">Account</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="index.html#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="section" style="margin-top: 80px;">
+        <div style="margin-bottom: 20px;">
+            <a href="index.html#categories" class="cta-button" style="padding: 8px 15px; font-size: 0.8rem;">&larr; Back to Categories</a>
+        </div>
+        <div class="section-title">
+            <h2>Luxury Timepieces</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="product-grid">
+            <!-- Watch 1 -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Elite&product=Chronograph Silver Edition | Stainless Steel Men\'s Watch | Precision Quartz Movement - Obsidian Black Dial&price=₹1499&originalPrice=₹3499&imgBase=images/watch_1&ext=png&desc=A masterpiece of precision and style. This chronograph features a premium stainless steel strap with a deep obsidian black dial, perfect for both formal and casual wear.'">
+                <div class="product-img slider-container">
+                    <img src="images/watch_1.png" class="slider-img active" alt="Watch 1">
+                    <img src="images/watch_1.png" class="slider-img" alt="Watch 1 Angle 2">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-brand">YJ Elite</div>
+                    <div class="product-name">Chronograph Silver Edition | Stainless Steel Men's Watch</div>
+                    <div class="product-price">₹1,499 <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px;">₹3,499</span></div>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
+                </div>
+            </div>
+
+            <!-- Watch 2 -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Heritage&product=Rose Gold Minimalist | Genuine Leather Strap Watch | Slim Profile Design - Tobacco Brown&price=₹999&originalPrice=₹2499&imgBase=images/watch_2&ext=png&desc=Experience understated elegance with this minimalist timepiece. Featuring a rose gold casing and a hand-crafted genuine leather strap in tobacco brown.'">
+                <div class="product-img slider-container">
+                    <img src="images/watch_2.png" class="slider-img active" alt="Watch 2">
+                    <img src="images/watch_2.png" class="slider-img" alt="Watch 2 Angle 2">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-brand">YJ Heritage</div>
+                    <div class="product-name">Rose Gold Minimalist | Genuine Leather Strap Watch</div>
+                    <div class="product-price">₹999 <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px;">₹2,499</span></div>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
+                </div>
+            </div>
+
+            <!-- Watch 3 -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Tech&product=Elite Smartwatch Pro | AMOLED Display | Stainless Steel Band | Health %26 Sport Tracking&price=₹2499&originalPrice=₹5999&imgBase=images/watch_3&ext=png&desc=The perfect blend of technology and luxury. This smartwatch features a stunning AMOLED display, a premium metal band, and advanced health tracking features.'">
+                <div class="product-img slider-container">
+                    <img src="images/watch_3.png" class="slider-img active" alt="Watch 3">
+                    <img src="images/watch_3.png" class="slider-img" alt="Watch 3 Angle 2">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-brand">YJ Tech</div>
+                    <div class="product-name">Elite Smartwatch Pro | AMOLED Display | Metal Band</div>
+                    <div class="product-price">₹2,499 <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px;">₹5,999</span></div>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-bottom">
+            &copy; 2026 YJ Menswear. All Rights Reserved.
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

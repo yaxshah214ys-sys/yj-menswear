@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Designer Sunglasses | YJ Menswear</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search sunglasses..." class="search-input" id="pageSearch">
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="cart.html" style="color: var(--primary);">Cart</a></li>
+                <li><a href="dashboard-orders.html">Account</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="index.html#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="section" style="margin-top: 80px;">
+        <div style="margin-bottom: 20px;">
+            <a href="index.html#categories" class="cta-button" style="padding: 8px 15px; font-size: 0.8rem;">&larr; Back to Categories</a>
+        </div>
+        <div class="section-title">
+            <h2>Designer Sunglasses</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="product-grid">
+            <!-- Sunglasses 1 -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Vision&product=Classic Aviator Gold | Polarized Lenses | Premium UV400 Protection - Gold Frame&price=₹899&originalPrice=₹1999&imgBase=images/sunglasses_1&ext=png&desc=A timeless icon redefined. These aviators feature gold-plated frames and high-definition polarized lenses for superior clarity and protection.'">
+                <div class="product-img slider-container">
+                    <img src="images/sunglasses_1.png" class="slider-img active" alt="Sunglasses 1">
+                    <img src="images/sunglasses_1.png" class="slider-img" alt="Sunglasses 1 Angle 2">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-brand">YJ Vision</div>
+                    <div class="product-name">Classic Aviator Gold | Polarized Lenses | Premium UV400</div>
+                    <div class="product-price">₹899 <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px;">₹1,999</span></div>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
+                </div>
+            </div>
+
+            <!-- Sunglasses 2 -->
+            <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Modern&product=Matte Black Wayfarer | Impact Resistant Lenses | Modern Lightweight Design - Matte Finish&price=₹750&originalPrice=₹1499&imgBase=images/sunglasses_2&ext=png&desc=Sleek, modern, and built for comfort. These matte black wayfarers offer a contemporary look with lightweight, durable frames.'">
+                <div class="product-img slider-container">
+                    <img src="images/sunglasses_2.png" class="slider-img active" alt="Sunglasses 2">
+                    <img src="images/sunglasses_2.png" class="slider-img" alt="Sunglasses 2 Angle 2">
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="event.stopPropagation(); setSlide(this, 0)"></span>
+                        <span class="dot" onclick="event.stopPropagation(); setSlide(this, 1)"></span>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-brand">YJ Modern</div>
+                    <div class="product-name">Matte Black Wayfarer | Impact Resistant Lenses</div>
+                    <div class="product-price">₹750 <span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px;">₹1,499</span></div>
+                    <button class="cta-button" style="display: block; width: 100%; margin-top: 15px; text-align: center; padding: 10px; background: transparent; color: var(--primary);">View Details</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-bottom">
+            &copy; 2026 YJ Menswear. All Rights Reserved.
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

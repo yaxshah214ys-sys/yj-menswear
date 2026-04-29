@@ -147,7 +147,11 @@
                 });
             }
             localStorage.setItem('cart', JSON.stringify(cart));
-            alert(`Added ${currentQty} ${product}(s) to cart!`);
+            if (typeof showToast !== 'undefined') {
+                showToast("Your order is successful in your cart");
+            } else {
+                alert("Your order is successful in your cart");
+            }
         }
     </script>
 </body>
