@@ -45,6 +45,17 @@
                     </div>
                     <small style="color: var(--text-muted); font-size: 0.75rem;">Min 8 chars, 1 Uppercase, 1 Number, 1 Special Char</small>
                 </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Security Question (For Password Reset)</label>
+                    <select id="regQuestion" required style="width: 100%; padding: 12px; background: var(--bg-main); border: 1px solid var(--glass); color: white; margin-bottom: 10px;">
+                        <option value="">Select a question...</option>
+                        <option value="pet">What is your first pet's name?</option>
+                        <option value="school">What was your first school's name?</option>
+                        <option value="city">In what city were you born?</option>
+                        <option value="food">What is your favorite food?</option>
+                    </select>
+                    <input type="text" id="regAnswer" placeholder="Your secret answer" required>
+                </div>
                 <button type="submit" class="cta-button" style="width: 100%; margin-top: 20px;">Register</button>
                 <p style="text-align: center; margin-top: 20px; color: var(--text-muted);">
                     Already have an account? <a href="login.html" style="color: var(--primary);">Login Here</a>
@@ -62,6 +73,8 @@
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
+            const question = document.getElementById('regQuestion').value;
+            const answer = document.getElementById('regAnswer').value.trim();
 
             const submitBtn = e.target.querySelector('button');
             submitBtn.innerText = "Registering...";
@@ -79,6 +92,7 @@
                 return;
             }
 
+            try {
                 let users = JSON.parse(localStorage.getItem('users') || '[]');
                 try {
                     if (typeof getData !== 'undefined') {
@@ -112,7 +126,7 @@
                     return;
                 }
 
-                const newUser = { name, email, password };
+                const newUser = { name, email, password, securityQuestion: question, securityAnswer: answer };
                 users.push(newUser);
                 localStorage.setItem('users', JSON.stringify(users));
                 

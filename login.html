@@ -51,16 +51,159 @@
         </div>
     </main>
 
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
+        <div class="form-container" style="background: var(--bg-card); width: 90%; max-width: 400px; padding: 30px; border-radius: 8px; position: relative;">
+            <span onclick="closeForgotModal()" style="position: absolute; right: 15px; top: 15px; cursor: pointer; font-size: 1.2rem; color: var(--text-muted);">✖</span>
+            <h3 style="color: var(--primary); margin-bottom: 20px;">Reset Password</h3>
+            
+            <div id="step1">
+                <p style="font-size: 0.9rem; margin-bottom: 15px; color: var(--text-muted);">Enter your registered email address.</p>
+                <div class="form-group">
+                    <input type="email" id="resetEmail" placeholder="your@email.com">
+                </div>
+                <button type="button" class="cta-button" style="width: 100%; padding: 10px;" onclick="checkResetEmail()">Next</button>
+            </div>
+
+            <div id="step2" style="display: none;">
+                <p id="securityQuestionText" style="font-size: 0.9rem; margin-bottom: 15px; color: var(--primary); font-weight: bold;"></p>
+                <div class="form-group">
+                    <input type="text" id="resetAnswer" placeholder="Your secret answer">
+                </div>
+                <button type="button" class="cta-button" style="width: 100%; padding: 10px;" onclick="verifySecurityAnswer()">Verify</button>
+            </div>
+
+            <div id="step3" style="display: none;">
+                <p style="font-size: 0.9rem; margin-bottom: 15px; color: var(--text-muted);">Create a new password.</p>
+                <div class="form-group">
+                    <input type="password" id="newPassword" placeholder="New Password">
+                </div>
+                <button type="button" class="cta-button" style="width: 100%; padding: 10px;" onclick="saveNewPassword()">Save Password</button>
+            </div>
+            
+            <p id="resetMessage" style="color: #ff4d4d; font-size: 0.85rem; margin-top: 15px; text-align: center; display: none;"></p>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
     <script>
+        let resetUserObj = null;
+
         function forgotPassword() {
-            const userEmail = prompt("Please enter your registered email address:");
-            if (userEmail) {
-                const subject = encodeURIComponent("Password Reset Request - YJ Menswear");
-                const body = encodeURIComponent(`Hello YJ Menswear Support,\n\nI have forgotten my password for the account registered with: ${userEmail}.\n\nPlease assist me with a password reset.\n\nThank you.`);
-                window.location.href = `mailto:yashshah2140@gmail.com?subject=${subject}&body=${body}`;
+            document.getElementById('forgotPasswordModal').style.display = 'flex';
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('resetMessage').style.display = 'none';
+            document.getElementById('resetEmail').value = '';
+            document.getElementById('resetAnswer').value = '';
+            document.getElementById('newPassword').value = '';
+        }
+
+        function closeForgotModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'none';
+        }
+
+        async function checkResetEmail() {
+            const email = document.getElementById('resetEmail').value.trim();
+            const msg = document.getElementById('resetMessage');
+            if (!email) return;
+            
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            try {
+                if (typeof getData !== 'undefined') {
+                    const fbUsers = await getData('users');
+                    if (fbUsers) {
+                        const fbArray = Array.isArray(fbUsers) ? fbUsers : Object.values(fbUsers);
+                        const validFbUsers = fbArray.filter(u => u && u.email);
+                        validFbUsers.forEach(cloudUser => {
+                            if (!users.find(u => u.email === cloudUser.email)) {
+                                users.push(cloudUser);
+                            }
+                        });
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                }
+            } catch(e){}
+
+            resetUserObj = users.find(u => u.email === email);
+            if (!resetUserObj) {
+                msg.innerText = "Email not found in our system!";
+                msg.style.color = '#ff4d4d';
+                msg.style.display = 'block';
+                return;
+            }
+
+            if (!resetUserObj.securityQuestion || !resetUserObj.securityAnswer) {
+                msg.innerText = "No security question set for this account. Cannot reset password automatically.";
+                msg.style.color = '#ff4d4d';
+                msg.style.display = 'block';
+                return;
+            }
+
+            msg.style.display = 'none';
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            
+            const questions = {
+                'pet': "What is your first pet's name?",
+                'school': "What was your first school's name?",
+                'city': "In what city were you born?",
+                'food': "What is your favorite food?"
+            };
+            document.getElementById('securityQuestionText').innerText = questions[resetUserObj.securityQuestion] || "Answer your secret question:";
+        }
+
+        function verifySecurityAnswer() {
+            const answer = document.getElementById('resetAnswer').value.toLowerCase().trim();
+            const msg = document.getElementById('resetMessage');
+            
+            if (answer === resetUserObj.securityAnswer.toLowerCase()) {
+                msg.style.display = 'none';
+                document.getElementById('step2').style.display = 'none';
+                document.getElementById('step3').style.display = 'block';
+            } else {
+                msg.innerText = "Incorrect answer! Please try again.";
+                msg.style.color = '#ff4d4d';
+                msg.style.display = 'block';
+            }
+        }
+
+        async function saveNewPassword() {
+            const newPass = document.getElementById('newPassword').value;
+            const msg = document.getElementById('resetMessage');
+            
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordRegex.test(newPass)) {
+                msg.innerText = "Password too weak! (Min 8 chars, 1 Upper, 1 Number, 1 Special)";
+                msg.style.color = '#ff4d4d';
+                msg.style.display = 'block';
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            const index = users.findIndex(u => u.email === resetUserObj.email);
+            if (index !== -1) {
+                users[index].password = newPass;
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                try {
+                    if (typeof syncData !== 'undefined') {
+                        await syncData('users', users);
+                    }
+                } catch(e){}
+
+                msg.innerText = "Password changed successfully! You can now login.";
+                msg.style.color = '#4caf50';
+                msg.style.display = 'block';
+                
+                setTimeout(() => {
+                    closeForgotModal();
+                    document.getElementById('loginEmail').value = resetUserObj.email;
+                    document.getElementById('loginPassword').value = '';
+                }, 2000);
             }
         }
 
