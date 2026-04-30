@@ -79,15 +79,20 @@
                 return;
             }
 
-            try {
                 let users = JSON.parse(localStorage.getItem('users') || '[]');
                 try {
-                    // Fetch latest from Firebase
                     if (typeof getData !== 'undefined') {
                         const fbUsers = await getData('users');
                         if (fbUsers) {
-                            users = Array.isArray(fbUsers) ? fbUsers : Object.values(fbUsers);
-                            users = users.filter(u => u); // remove nulls
+                            const fbArray = Array.isArray(fbUsers) ? fbUsers : Object.values(fbUsers);
+                            const validFbUsers = fbArray.filter(u => u && u.email);
+                            
+                            // Merge local and cloud users
+                            validFbUsers.forEach(cloudUser => {
+                                if (!users.find(u => u.email === cloudUser.email)) {
+                                    users.push(cloudUser);
+                                }
+                            });
                             localStorage.setItem('users', JSON.stringify(users));
                         }
                     }
