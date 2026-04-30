@@ -14,14 +14,46 @@
     <main class="section" style="margin-top: 80px;">
         <div class="form-container">
             <div class="section-title">
-                <h2>Shipping Details</h2>
+                <h2>Secure Checkout</h2>
                 <div class="line"></div>
             </div>
+            
             <div style="background: var(--glass); padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-                <p><strong>Product:</strong> <span id="displayProductName">Loading...</span></p>
-                <p><strong>Total:</strong> <span id="displayProductPrice">₹0</span></p>
+                <h3 style="margin-bottom: 15px; color: var(--primary);">Order Summary</h3>
+                <div id="orderItemsList"></div>
+                <hr style="border: 0; border-top: 1px solid var(--glass); margin: 15px 0;">
+                
+                <!-- Coupon Section -->
+                <div style="margin-bottom: 15px;">
+                    <label style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 8px; display: block;">Have a coupon code?</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="couponCode" placeholder="Enter Code" style="flex: 1; padding: 10px; background: var(--bg-main); border: 1px solid var(--glass); color: white; border-radius: 4px; text-transform: uppercase;">
+                        <button type="button" onclick="applyCoupon()" class="cta-button" style="padding: 10px 20px;">Apply</button>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
+                        <span style="display: inline-block; background: rgba(197, 160, 89, 0.1); padding: 3px 8px; border-radius: 10px; border: 1px dashed var(--primary); margin-right: 5px; cursor: pointer; margin-bottom: 5px;" onclick="document.getElementById('couponCode').value='FIRST5'">FIRST5 (5% Off 1st Order)</span>
+                        <span style="display: inline-block; background: rgba(197, 160, 89, 0.1); padding: 3px 8px; border-radius: 10px; border: 1px dashed var(--primary); cursor: pointer;" onclick="document.getElementById('couponCode').value='YJ999'">YJ999 (5% Off above ₹999)</span>
+                    </div>
+                    <p id="couponMessage" style="color: #4caf50; font-size: 0.85rem; margin-top: 5px; display: none;"></p>
+                </div>
+                
+                <hr style="border: 0; border-top: 1px solid var(--glass); margin: 15px 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span>Subtotal:</span>
+                    <span id="subtotalPrice">₹0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #4caf50; display: none;" id="discountRow">
+                    <span>Discount:</span>
+                    <span id="discountAmount">- ₹0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 700; color: var(--primary);">
+                    <span>Total:</span>
+                    <span id="displayProductPrice">₹0</span>
+                </div>
             </div>
+
             <form id="checkoutForm">
+                <h3 style="margin-bottom: 15px; color: var(--primary);">Shipping Details</h3>
                 <div class="form-group">
                     <label>Full Name</label>
                     <input type="text" id="custName" placeholder="Your Name" required>
@@ -48,22 +80,110 @@
                     <label>Delivery Instructions (Optional)</label>
                     <textarea id="custNotes" placeholder="Any specific instructions?"></textarea>
                 </div>
-                <button type="submit" class="cta-button" style="width: 100%; margin-top: 20px;">Place Order via WhatsApp</button>
+                <button type="submit" class="cta-button" style="width: 100%; margin-top: 20px;">Confirm & Place Order on WhatsApp</button>
             </form>
         </div>
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const productName = urlParams.get('product') || 'Selected Product';
-        const productPrice = urlParams.get('price') || 'Contact for Price';
-        const qty = urlParams.get('qty') || 1;
+        const fromCart = urlParams.get('from') === 'cart';
+        
+        let orderItems = [];
+        let baseTotal = 0;
+        let finalTotal = 0;
+        let appliedDiscount = 0;
+        let appliedCoupon = '';
 
-        const priceNum = parseInt(productPrice.replace(/[₹,]/g, ''));
-        const totalPrice = isNaN(priceNum) ? productPrice : `₹${(priceNum * qty).toLocaleString()}`;
+        if (fromCart) {
+            orderItems = JSON.parse(localStorage.getItem('cart') || '[]');
+        } else {
+            const productName = urlParams.get('product') || 'Selected Product';
+            const productPrice = urlParams.get('price') || '0';
+            const qty = parseInt(urlParams.get('qty') || 1);
+            orderItems = [{ name: productName, price: productPrice, quantity: qty }];
+        }
 
-        document.getElementById('displayProductName').innerText = `${productName} (x${qty})`;
-        document.getElementById('displayProductPrice').innerText = totalPrice;
+        if (orderItems.length === 0) {
+            window.location.href = 'index.html';
+        }
+
+        function renderSummary() {
+            let listHtml = '';
+            baseTotal = 0;
+            orderItems.forEach(item => {
+                const qty = item.quantity || 1;
+                const priceNum = parseInt(item.price.replace(/[₹,]/g, '')) || 0;
+                baseTotal += priceNum * qty;
+                listHtml += `<p style="display:flex; justify-content:space-between; margin-bottom:10px; font-size: 0.95rem;">
+                    <span style="color: var(--text-muted);">${item.name} <span style="color: var(--primary);">(x${qty})</span></span> 
+                    <span>₹${(priceNum * qty).toLocaleString()}</span>
+                </p>`;
+            });
+            document.getElementById('orderItemsList').innerHTML = listHtml;
+            document.getElementById('subtotalPrice').innerText = `₹${baseTotal.toLocaleString()}`;
+            calculateFinal();
+        }
+
+        function calculateFinal() {
+            finalTotal = baseTotal - appliedDiscount;
+            document.getElementById('displayProductPrice').innerText = `₹${finalTotal.toLocaleString()}`;
+            
+            const discountRow = document.getElementById('discountRow');
+            if (appliedDiscount > 0) {
+                discountRow.style.display = 'flex';
+                document.getElementById('discountAmount').innerText = `- ₹${appliedDiscount.toLocaleString()}`;
+            } else {
+                discountRow.style.display = 'none';
+            }
+        }
+
+        function applyCoupon() {
+            const code = document.getElementById('couponCode').value.toUpperCase().trim();
+            const msgBox = document.getElementById('couponMessage');
+            appliedDiscount = 0;
+            appliedCoupon = '';
+
+            const orders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+            
+            if (code === 'FIRST5') {
+                if (orders.length > 0) {
+                    msgBox.style.color = '#ff4d4d';
+                    msgBox.innerText = "This coupon is only valid for your first order!";
+                    msgBox.style.display = 'block';
+                } else {
+                    appliedDiscount = Math.floor(baseTotal * 0.05);
+                    appliedCoupon = 'FIRST5';
+                    msgBox.style.color = '#4caf50';
+                    msgBox.innerText = `Success! FIRST5 applied. You saved ₹${appliedDiscount.toLocaleString()}`;
+                    msgBox.style.display = 'block';
+                }
+            } else if (code === 'YJ999') {
+                if (baseTotal <= 999) {
+                    msgBox.style.color = '#ff4d4d';
+                    msgBox.innerText = "Cart total must be above ₹999 for this coupon!";
+                    msgBox.style.display = 'block';
+                } else {
+                    appliedDiscount = Math.floor(baseTotal * 0.05);
+                    appliedCoupon = 'YJ999';
+                    msgBox.style.color = '#4caf50';
+                    msgBox.innerText = `Success! YJ999 applied. You saved ₹${appliedDiscount.toLocaleString()}`;
+                    msgBox.style.display = 'block';
+                }
+            } else if (code !== '') {
+                msgBox.style.color = '#ff4d4d';
+                msgBox.innerText = "Invalid or expired coupon code!";
+                msgBox.style.display = 'block';
+            } else {
+                msgBox.style.display = 'none';
+            }
+            calculateFinal();
+        }
+
+        renderSummary();
 
         // Auto-fill address if saved
         const storedAddress = JSON.parse(localStorage.getItem('userAddress')) || {};
@@ -73,9 +193,19 @@
             document.getElementById('custPincode').value = storedAddress.pincode;
         }
 
-        document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+        // Fill Name from profile
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (user && user.name) {
+            document.getElementById('custName').value = user.name;
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const submitBtn = e.target.querySelector('button');
+            submitBtn.innerText = "Processing...";
+            submitBtn.disabled = true;
+
             const name = document.getElementById('custName').value;
             const phone = document.getElementById('custPhone').value;
             const address = document.getElementById('custAddress').value;
@@ -83,24 +213,66 @@
             const pincode = document.getElementById('custPincode').value;
             const instructions = document.getElementById('custNotes').value || 'None';
 
-            const message = `*NEW ORDER - YJ MENSWEAR*%0A%0A` +
-                            `*Product:* ${productName} (x${qty})%0A` +
-                            `*Total Price:* ${totalPrice}%0A%0A` +
-                            `*Customer:* ${name}%0A` +
-                            `*Contact:* ${phone}%0A%0A` +
-                            `*Delivery Address:*%0A${address}, ${city} - ${pincode}%0A%0A` +
-                            `*Instructions:* ${instructions}`;
+            let itemsText = '';
+            orderItems.forEach(item => {
+                const priceNum = parseInt(item.price.replace(/[₹,]/g, '')) || 0;
+                itemsText += `- ${item.name} x${item.quantity || 1} (₹${priceNum.toLocaleString()})\n`;
+            });
 
-            // Save order to history
+            let message = `*NEW ORDER - YJ MENSWEAR*%0A%0A` +
+                          `*Items:*%0A${encodeURIComponent(itemsText)}%0A` +
+                          `*Subtotal:* ₹${baseTotal.toLocaleString()}%0A`;
+
+            if (appliedCoupon) {
+                message += `*Coupon Applied:* ${appliedCoupon} (-₹${appliedDiscount.toLocaleString()})%0A`;
+            }
+            message += `*Total Payable:* ₹${finalTotal.toLocaleString()}%0A%0A` +
+                       `*Customer:* ${name}%0A` +
+                       `*Contact:* ${phone}%0A%0A` +
+                       `*Delivery Address:*%0A${address}, ${city} - ${pincode}%0A%0A` +
+                       `*Instructions:* ${instructions}`;
+
+            // Save order to user history
             const newOrder = {
                 id: '#YJ-' + Math.floor(1000 + Math.random() * 9000),
                 date: new Date().toLocaleDateString('en-IN'),
-                product: `${productName} (x${qty})`,
-                total: totalPrice
+                product: fromCart ? `${orderItems.length} items from cart` : orderItems[0].name,
+                total: `₹${finalTotal.toLocaleString()}`,
+                status: 'Processing'
             };
             const orders = JSON.parse(localStorage.getItem('userOrders')) || [];
             orders.push(newOrder);
             localStorage.setItem('userOrders', JSON.stringify(orders));
+
+            // Save for Admin dashboard
+            let allOrders = JSON.parse(localStorage.getItem('allOrders') || '[]');
+            const email = user ? user.email : 'Guest';
+            allOrders.push({
+                id: newOrder.id,
+                customer: name,
+                email: email,
+                items: orderItems.map(i => `${i.name} x ${i.quantity || 1}`).join(', '),
+                total: newOrder.total,
+                status: 'Processing',
+                date: new Date().toLocaleString()
+            });
+            localStorage.setItem('allOrders', JSON.stringify(allOrders));
+
+            // Sync Admin Orders to Firebase
+            try {
+                if (typeof syncData !== 'undefined') {
+                    await syncData('orders', allOrders);
+                }
+            } catch (err) {
+                console.warn('Firebase order sync failed', err);
+            }
+
+            // Save address for future
+            localStorage.setItem('userAddress', JSON.stringify({ street: address, city: city, pincode: pincode }));
+
+            if (fromCart) {
+                localStorage.removeItem('cart'); // Clear cart
+            }
 
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             const waUrl = isMobile 
@@ -108,7 +280,7 @@
                 : `https://web.whatsapp.com/send?phone=917984822059&text=${message}`;
 
             window.open(waUrl, '_blank');
-            alert("Redirecting to WhatsApp to confirm your order!");
+            window.location.href = 'dashboard-orders.html';
         });
     </script>
 </body>
