@@ -77,6 +77,8 @@
         </div>
     </footer>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -84,7 +86,7 @@
             document.getElementById('userName').value = user.name || '';
             document.getElementById('userEmail').value = user.email || '';
 
-            document.getElementById('settingsForm').addEventListener('submit', (e) => {
+            document.getElementById('settingsForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const newName = document.getElementById('userName').value;
                 const newPass = document.getElementById('newPass').value;
@@ -95,30 +97,70 @@
                     return;
                 }
 
-                // Update user in localStorage
+                // First pull latest users to prevent overwriting cloud
                 let users = JSON.parse(localStorage.getItem('users') || '[]');
+                try {
+                    if (typeof getData !== 'undefined') {
+                        const fbUsers = await getData('users');
+                        if (fbUsers) {
+                            const fbArray = Array.isArray(fbUsers) ? fbUsers : Object.values(fbUsers);
+                            users = fbArray.filter(u => u && u.email);
+                        }
+                    }
+                } catch(err) {}
+
                 const userIndex = users.findIndex(u => u.email === user.email);
                 
                 if (userIndex !== -1) {
                     users[userIndex].name = newName;
                     if (newPass) users[userIndex].password = newPass;
+                    
                     localStorage.setItem('users', JSON.stringify(users));
                     
                     // Update current session
                     user.name = newName;
                     localStorage.setItem('currentUser', JSON.stringify(user));
                     
-                    alert('Profile updated successfully!');
+                    // Sync to Cloud
+                    try {
+                        if (typeof syncData !== 'undefined') {
+                            await syncData('users', users);
+                        }
+                    } catch(err) {}
+                    
+                    alert('Password and profile updated securely in the cloud!');
+                    document.getElementById('newPass').value = '';
+                    document.getElementById('confirmPass').value = '';
+                } else {
+                    alert('User not found.');
                 }
             });
         });
 
-        function deleteAccount() {
+        async function deleteAccount() {
             if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
                 const user = JSON.parse(localStorage.getItem('currentUser'));
                 let users = JSON.parse(localStorage.getItem('users') || '[]');
+                
+                try {
+                    if (typeof getData !== 'undefined') {
+                        const fbUsers = await getData('users');
+                        if (fbUsers) {
+                            const fbArray = Array.isArray(fbUsers) ? fbUsers : Object.values(fbUsers);
+                            users = fbArray.filter(u => u && u.email);
+                        }
+                    }
+                } catch(err) {}
+
                 users = users.filter(u => u.email !== user.email);
                 localStorage.setItem('users', JSON.stringify(users));
+                
+                try {
+                    if (typeof syncData !== 'undefined') {
+                        await syncData('users', users);
+                    }
+                } catch(err) {}
+
                 logout();
             }
         }

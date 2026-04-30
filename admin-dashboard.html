@@ -46,11 +46,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
     <script>
-        // Simple security check to warn if not admin
+        // Strict security check to block non-admins
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if (!currentUser || currentUser.email !== 'yashshah2140@gmail.com') {
-            console.warn("You are not logged in as the official admin.");
-            // We aren't strictly blocking right now to let the owner easily test the page without logging in again.
+            alert("Access Denied! You are not authorized to view the Admin Panel.");
+            window.location.href = "index.html";
         }
 
         async function loadAdminOrders() {
