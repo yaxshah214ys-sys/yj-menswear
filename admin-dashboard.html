@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | YJ Menswear</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Admin Panel</a></div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Store Front</a></li>
+                <li><a href="dashboard-orders.html">My Account</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="section" style="margin-top: 100px;">
+        <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <h2>Manage Customer Orders</h2>
+            <button onclick="loadAdminOrders()" class="cta-button" style="padding: 10px 20px; font-size: 0.9rem;">↻ Refresh Cloud Orders</button>
+        </div>
+        
+        <div style="background: var(--bg-card); padding: 20px; border-radius: 8px; margin-top: 20px; overflow-x: auto;">
+            <table class="order-table" style="width: 100%; min-width: 800px;">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer Details</th>
+                        <th>Date</th>
+                        <th>Items Ordered</th>
+                        <th>Total Amount</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+                <tbody id="adminOrderList">
+                    <tr><td colspan="6" style="text-align: center; padding: 30px;">Loading live orders from server... Please wait.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Simple security check to warn if not admin
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser || currentUser.email !== 'yashshah2140@gmail.com') {
+            console.warn("You are not logged in as the official admin.");
+            // We aren't strictly blocking right now to let the owner easily test the page without logging in again.
+        }
+
+        async function loadAdminOrders() {
+            const container = document.getElementById('adminOrderList');
+            container.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;">Loading...</td></tr>';
+            
+            try {
+                if (typeof getData === 'undefined') {
+                    container.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #ff4d4d;">Database script not loaded. Check internet.</td></tr>';
+                    return;
+                }
+                
+                // Fetch all orders from Firebase Realtime DB
+                const cloudOrders = await getData('orders');
+                
+                if (!cloudOrders) {
+                    container.innerHTML = '<tr><td colspan="6" style="text-align: center;">No orders have been placed yet.</td></tr>';
+                    return;
+                }
+                
+                const ordersArray = Array.isArray(cloudOrders) ? cloudOrders : Object.values(cloudOrders);
+                const validOrders = ordersArray.filter(o => o && o.id); // Filter out any empty spots
+                
+                if (validOrders.length === 0) {
+                    container.innerHTML = '<tr><td colspan="6" style="text-align: center;">No valid orders found.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                // Reverse to show newest orders at the top
+                validOrders.reverse().forEach((order, index) => {
+                    const status = order.status || 'Processing';
+                    
+                    let selectStyle = 'padding: 8px; border-radius: 4px; outline: none; cursor: pointer; width: 100%; font-weight: bold; border: none; ';
+                    if (status === 'Processing') {
+                        selectStyle += 'background: rgba(255, 152, 0, 0.2); color: #ff9800;'; // Orange
+                    } else if (status === 'Cancelled') {
+                        selectStyle += 'background: rgba(244, 67, 54, 0.2); color: #f44336;'; // Red
+                    } else { 
+                        selectStyle += 'background: rgba(76, 175, 80, 0.2); color: #4caf50;'; // Green for Confirmed, Shipped, Delivered
+                    }
+
+                    // We need original array index to properly update the cloud data later
+                    const originalIndex = validOrders.length - 1 - index;
+                    
+                    const itemText = order.items ? order.items.replace(/,/g, '<br>') : order.product;
+                    const cName = order.customer || 'Unknown';
+                    const cEmail = order.email || 'N/A';
+                    
+                    html += `
+                        <tr style="border-bottom: 1px solid var(--glass);">
+                            <td style="font-weight: bold; color: var(--primary);">${order.id || 'N/A'}</td>
+                            <td>${cName}<br><small style="color:var(--text-muted)">${cEmail}</small></td>
+                            <td>${order.date}</td>
+                            <td><small>${itemText}</small></td>
+                            <td style="font-weight: bold;">${order.total}</td>
+                            <td>
+                                <select onchange="updateOrderStatus('${order.id}', this.value, ${originalIndex})" style="${selectStyle}">
+                                    <option value="Processing" ${status === 'Processing' ? 'selected' : ''} style="background: #1a1a1a; color: white;">Processing</option>
+                                    <option value="Confirmed" ${status === 'Confirmed' ? 'selected' : ''} style="background: #1a1a1a; color: white;">Confirmed</option>
+                                    <option value="Shipped" ${status === 'Shipped' ? 'selected' : ''} style="background: #1a1a1a; color: white;">Shipped</option>
+                                    <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''} style="background: #1a1a1a; color: white;">Delivered</option>
+                                    <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''} style="background: #1a1a1a; color: white;">Cancelled</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                window.currentCloudOrders = validOrders.reverse(); // Store back as original chronological order array
+                
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #ff4d4d;">Error loading live orders. Check your internet or Firebase connection.</td></tr>';
+            }
+        }
+
+        async function updateOrderStatus(orderId, newStatus, arrayIndex) {
+            if (!window.currentCloudOrders) return;
+            
+            // Apply the change to local memory
+            window.currentCloudOrders[arrayIndex].status = newStatus;
+            
+            try {
+                // Sync the entire array to Firebase replacing old data
+                await syncData('orders', window.currentCloudOrders);
+                
+                if (typeof showToast !== 'undefined') {
+                    showToast(`Order ${orderId} is now ${newStatus}`);
+                }
+                
+                // Refresh the list to apply new colors
+                loadAdminOrders();
+                
+            } catch(e) {
+                console.error("Firebase Update Failed:", e);
+                alert("Failed to update status on the server. Please check your internet connection.");
+            }
+        }
+
+        // Auto load orders when page opens
+        window.onload = loadAdminOrders;
+    </script>
+</body>
+</html>
