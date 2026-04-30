@@ -63,14 +63,41 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const user = JSON.parse(localStorage.getItem('currentUser')) || { name: 'Guest' };
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('currentUser')) || { name: 'Guest', email: 'Guest' };
             document.getElementById('welcomeUser').innerText = `Welcome, ${user.name}`;
 
-            const orders = JSON.parse(localStorage.getItem('userOrders')) || [];
             const container = document.getElementById('orderContainer');
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">Fetching your latest orders from the secure server...</div>';
 
-            if (orders.length > 0) {
+            let myOrders = [];
+            
+            // Try fetching from Cloud first to get live admin updates
+            try {
+                if (typeof getData !== 'undefined') {
+                    const cloudOrders = await getData('orders');
+                    if (cloudOrders) {
+                        const ordersArray = Array.isArray(cloudOrders) ? cloudOrders : Object.values(cloudOrders);
+                        // Filter orders belonging to this logged in email
+                        myOrders = ordersArray.filter(o => o && o.email === user.email);
+                        
+                        // Sync back to local storage for offline use
+                        if (myOrders.length > 0) {
+                            localStorage.setItem('userOrders', JSON.stringify(myOrders));
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("Cloud fetch failed, using offline local orders");
+                myOrders = JSON.parse(localStorage.getItem('userOrders')) || [];
+            }
+
+            // Fallback if cloud had zero orders (e.g. guest mode)
+            if (myOrders.length === 0) {
+                myOrders = JSON.parse(localStorage.getItem('userOrders')) || [];
+            }
+
+            if (myOrders.length > 0) {
                 let html = `
                     <table class="order-table">
                         <thead>
@@ -85,21 +112,41 @@
                         <tbody>
                 `;
 
-                orders.reverse().forEach(order => {
-                    const statusText = order.status || 'Order Placed';
+                myOrders.reverse().forEach(order => {
+                    const statusText = order.status || 'Processing';
+                    let statusClass = 'status-processing'; // default orange
+                    let inlineStyle = '';
+                    
+                    if (statusText === 'Delivered' || statusText === 'Confirmed' || statusText === 'Shipped') {
+                        statusClass = 'status-delivered'; // green
+                    } else if (statusText === 'Cancelled') {
+                        statusClass = ''; 
+                        inlineStyle = 'background: rgba(244, 67, 54, 0.1); color: #f44336;'; // red
+                    }
+
+                    const productText = order.items ? order.items : order.product;
+                    const orderId = order.id ? order.id : 'N/A';
+
                     html += `
                         <tr>
-                            <td>#${order.id}</td>
+                            <td>${orderId}</td>
                             <td>${order.date}</td>
-                            <td>${order.product}</td>
+                            <td><small>${productText}</small></td>
                             <td>${order.total}</td>
-                            <td><span class="status-badge status-delivered">${statusText}</span></td>
+                            <td><span class="status-badge ${statusClass}" style="${inlineStyle}">${statusText}</span></td>
                         </tr>
                     `;
                 });
 
                 html += `</tbody></table>`;
                 container.innerHTML = html;
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <p>No orders found in your history.</p>
+                        <a href="index.html#categories" class="cta-button" style="display: inline-block; margin-top: 20px;">Start Shopping</a>
+                    </div>
+                `;
             }
         });
 
