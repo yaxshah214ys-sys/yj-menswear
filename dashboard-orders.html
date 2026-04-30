@@ -86,13 +86,14 @@
                 `;
 
                 orders.reverse().forEach(order => {
+                    const statusText = order.status || 'Order Placed';
                     html += `
                         <tr>
                             <td>#${order.id}</td>
                             <td>${order.date}</td>
                             <td>${order.product}</td>
                             <td>${order.total}</td>
-                            <td><span class="status-badge status-processing">Processing</span></td>
+                            <td><span class="status-badge status-delivered">${statusText}</span></td>
                         </tr>
                     `;
                 });

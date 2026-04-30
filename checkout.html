@@ -238,7 +238,7 @@
                 date: new Date().toLocaleDateString('en-IN'),
                 product: fromCart ? `${orderItems.length} items from cart` : orderItems[0].name,
                 total: `₹${finalTotal.toLocaleString()}`,
-                status: 'Processing'
+                status: 'Order Placed'
             };
             const orders = JSON.parse(localStorage.getItem('userOrders')) || [];
             orders.push(newOrder);
@@ -253,7 +253,7 @@
                 email: email,
                 items: orderItems.map(i => `${i.name} x ${i.quantity || 1}`).join(', '),
                 total: newOrder.total,
-                status: 'Processing',
+                status: 'Order Placed',
                 date: new Date().toLocaleString()
             });
             localStorage.setItem('allOrders', JSON.stringify(allOrders));
