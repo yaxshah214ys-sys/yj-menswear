@@ -74,15 +74,21 @@
             submitBtn.disabled = true;
 
             try {
-                // Fetch latest from Firebase to handle multi-device login
-                if (typeof getData !== 'undefined') {
-                    const fbUsers = await getData('users');
-                    if (fbUsers) {
-                        localStorage.setItem('users', JSON.stringify(fbUsers));
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                try {
+                    // Fetch latest from Firebase to handle multi-device login
+                    if (typeof getData !== 'undefined') {
+                        const fbUsers = await getData('users');
+                        if (fbUsers) {
+                            users = Array.isArray(fbUsers) ? fbUsers : Object.values(fbUsers);
+                            users = users.filter(u => u); // remove nulls
+                            localStorage.setItem('users', JSON.stringify(users));
+                        }
                     }
+                } catch (fbErr) {
+                    console.warn("Firebase fetch failed, using local storage", fbErr);
                 }
 
-                const users = JSON.parse(localStorage.getItem('users') || '[]');
                 const user = users.find(u => u.email === email && u.password === password);
 
                 if (user) {
