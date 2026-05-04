@@ -121,6 +121,74 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageSearch = document.getElementById('pageSearch');
 
     if (globalSearch) {
+        // Create results container
+        const searchWrapper = globalSearch.parentElement;
+        const resultsDiv = document.createElement('div');
+        resultsDiv.id = 'searchSuggestions';
+        resultsDiv.style.cssText = `
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid var(--glass);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            z-index: 1000;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        `;
+        searchWrapper.style.position = 'relative';
+        searchWrapper.appendChild(resultsDiv);
+
+        globalSearch.addEventListener('input', async (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (query.length < 2) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            // Get products from Cloud Inventory + Common items
+            const cloudProducts = await getData('inventory') || [];
+            const staticProducts = [
+                { name: 'Leather Wallet', url: 'wallets.html' },
+                { name: 'Premium Watch', url: 'watches.html' },
+                { name: 'Classic Belt', url: 'belts.html' },
+                { name: 'Luxury Perfume', url: 'perfumes.html' },
+                { name: 'Aviator Sunglasses', url: 'sunglasses.html' }
+            ];
+
+            const allProds = [...staticProducts, ...cloudProducts];
+            const matches = allProds.filter(p => p.name.toLowerCase().includes(query)).slice(0, 6);
+
+            if (matches.length > 0) {
+                resultsDiv.innerHTML = matches.map(m => `
+                    <div class="search-item" style="padding: 12px 20px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s;" 
+                         onclick="window.location.href='${m.url || (m.category + '.html')}';">
+                        <div style="font-weight: 600; font-size: 0.9rem;">${m.name}</div>
+                        <div style="font-size: 0.75rem; color: var(--primary); text-transform: capitalize;">${m.category || 'Shop'}</div>
+                    </div>
+                `).join('');
+                
+                // Add hover effects
+                resultsDiv.querySelectorAll('.search-item').forEach(item => {
+                    item.onmouseover = () => item.style.background = 'rgba(255,215,0,0.1)';
+                    item.onmouseout = () => item.style.background = 'transparent';
+                });
+
+                resultsDiv.style.display = 'block';
+            } else {
+                resultsDiv.style.display = 'none';
+            }
+        });
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!searchWrapper.contains(e.target)) resultsDiv.style.display = 'none';
+        });
+
         globalSearch.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const query = globalSearch.value.toLowerCase();
@@ -204,4 +272,52 @@ function setSlide(element, index) {
     // Add active to target
     images[index].classList.add('active');
     dots[index].classList.add('active');
+}
+
+// Dynamic Category Loading Logic
+async function loadCategoryProducts(category) {
+    const grid = document.getElementById('dynamicProductGrid');
+    if (!grid) return;
+
+    try {
+        if (typeof getData === 'undefined') return;
+        const data = await getData('inventory');
+        const allProducts = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
+        
+        // Filter by category
+        const categoryProducts = allProducts.filter(p => p.category === category);
+
+        if (categoryProducts.length === 0) {
+            // Keep existing static content if no cloud products found
+            return;
+        }
+
+        // If cloud products exist, we can either append them or replace static ones.
+        // Let's prepend them so new items appear first.
+        const dynamicHtml = categoryProducts.reverse().map(p => `
+            <div class="product-card" onclick="window.location.href='product-detail.html?product=${encodeURIComponent(p.name)}&price=₹${p.price}&originalPrice=₹${p.oldPrice || ''}&imgBase=${p.img.replace('.png', '').replace('.jpg', '')}&ext=${p.img.split('.').pop()}&category=${p.category}'">
+                <div class="product-img">
+                    <img src="${p.img}" alt="${p.name}">
+                </div>
+                <div class="product-info">
+                    <div class="product-brand" style="text-transform: capitalize;">${p.category}</div>
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-price">
+                        <span>₹${parseFloat(p.price).toLocaleString('en-IN')}</span>
+                        ${p.oldPrice ? `<span style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem; margin-left: 10px; font-weight: 400;">₹${parseFloat(p.oldPrice).toLocaleString('en-IN')}</span>` : ''}
+                    </div>
+                    <button class="cta-button" style="width: 100%; margin-top: 15px; font-size: 0.8rem;">View Product</button>
+                </div>
+            </div>
+        `).join('');
+
+        // Clear only if you want to replace static products completely
+        // grid.innerHTML = dynamicHtml; 
+        
+        // Let's prepend to show cloud products at the top
+        grid.insertAdjacentHTML('afterbegin', dynamicHtml);
+
+    } catch (e) {
+        console.error("Error loading dynamic products", e);
+    }
 }

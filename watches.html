@@ -35,7 +35,7 @@
             <div class="line"></div>
         </div>
 
-        <div class="product-grid">
+        <div class="product-grid" id="dynamicProductGrid">
             <!-- Watch 1 -->
             <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Elite&product=Chronograph Silver Edition | Stainless Steel Men\'s Watch | Precision Quartz Movement - Obsidian Black Dial&price=₹1499&originalPrice=₹3499&imgBase=images/watch_1&ext=png&desc=A masterpiece of precision and style. This chronograph features a premium stainless steel strap with a deep obsidian black dial, perfect for both formal and casual wear.'">
                 <div class="product-img slider-container">
@@ -97,6 +97,11 @@
             &copy; 2026 YJ Menswear. All Rights Reserved.
         </div>
     </footer>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
+    <script>
+        loadCategoryProducts('watches');
+    </script>
 </body>
 </html>

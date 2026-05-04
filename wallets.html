@@ -35,7 +35,7 @@
             <div class="line"></div>
         </div>
 
-        <div class="product-grid">
+        <div class="product-grid" id="dynamicProductGrid">
             <!-- Black Wallet -->
             <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Luxury&product=Premium Full-Grain Leather Wallet | RFID Protected | Luxury Bifold with 8 Card Slots - Obsidian Black&price=₹450&originalPrice=₹1,299&imgBase=images/wallet_black&ext=png&desc=Elevate your pocket essentials with this Midnight Noir Bifold. Crafted from 100% full-grain leather, it offers a sophisticated look while keeping your data safe with advanced RFID blocking technology. Features 8 precision card slots and a spacious currency compartment.'">
                 <div class="product-img slider-container">
@@ -89,6 +89,11 @@
             &copy; 2026 YJ Menswear. All Rights Reserved.
         </div>
     </footer>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
+    <script>
+        loadCategoryProducts('wallets');
+    </script>
 </body>
 </html>

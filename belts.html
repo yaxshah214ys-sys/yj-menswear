@@ -35,7 +35,7 @@
             <div class="line"></div>
         </div>
 
-        <div class="product-grid">
+        <div class="product-grid" id="dynamicProductGrid">
             <!-- Black Belt -->
             <div class="product-card" onclick="location.href='product-detail.html?brand=YJ Classic&product=Formal Full-Grain Leather Belt | Polished Silver Buckle | Hand-Finished Professional Edge - Midnight Black&price=₹350&originalPrice=₹899&imgBase=images/belt_black&ext=png&desc=A quintessential accessory for the modern professional. This Midnight Black Formal belt is crafted from 100% genuine full-grain leather, ensuring both style and longevity. It features a high-grade polished silver buckle and hand-finished edges for a smooth, premium feel. Ideal for formal suits and daily office wear.'">
                 <div class="product-img slider-container">
@@ -112,6 +112,11 @@
             &copy; 2026 YJ Menswear. All Rights Reserved.
         </div>
     </footer>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
+    <script>
+        loadCategoryProducts('belts');
+    </script>
 </body>
 </html>

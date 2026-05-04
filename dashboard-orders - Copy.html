@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | YJ Menswear</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header">
+        <div class="logo"><a href="index.html" style="text-decoration: none; color: inherit;">YJ Menswear</a></div>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search orders..." class="search-input" id="globalSearch">
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="dashboard-orders.html" style="color: var(--primary);">Account</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="section" style="margin-top: 100px;">
+        <div class="dashboard-grid">
+            <aside class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="dashboard-orders.html">My Orders</a></li>
+                    <li><a href="dashboard-wishlist.html">Wishlist</a></li>
+                    <li><a href="dashboard-address.html">Shipping Address</a></li>
+                    <li><a href="dashboard-settings.html">Account Settings</a></li>
+                </ul>
+            </aside>
+
+            <div class="dashboard-content">
+                <div class="dashboard-header">
+                    <h2>My Orders</h2>
+                    <span id="welcomeUser" style="color: var(--text-muted);">Welcome, User</span>
+                </div>
+                
+                <div id="orderContainer">
+                    <!-- Orders will be loaded here -->
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <p>No orders found in your history.</p>
+                        <a href="perfumes.html" class="cta-button" style="display: inline-block; margin-top: 20px;">Start Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer style="margin-top: 50px;">
+        <div class="footer-bottom">
+            &copy; 2026 YJ Menswear. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('currentUser')) || { name: 'Guest', email: 'Guest' };
+            document.getElementById('welcomeUser').innerText = `Welcome, ${user.name}`;
+
+            const container = document.getElementById('orderContainer');
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">Fetching your latest orders from the secure server...</div>';
+
+            let myOrders = [];
+            
+            // Try fetching from Cloud first to get live admin updates
+            try {
+                if (typeof getData !== 'undefined') {
+                    const cloudOrders = await getData('orders');
+                    if (cloudOrders) {
+                        const ordersArray = Array.isArray(cloudOrders) ? cloudOrders : Object.values(cloudOrders);
+                        // Filter orders belonging to this logged in email
+                        myOrders = ordersArray.filter(o => o && o.email === user.email);
+                        
+                        // Sync back to local storage for offline use
+                        if (myOrders.length > 0) {
+                            localStorage.setItem('userOrders', JSON.stringify(myOrders));
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("Cloud fetch failed, using offline local orders");
+                myOrders = JSON.parse(localStorage.getItem('userOrders')) || [];
+            }
+
+            // Fallback if cloud had zero orders (e.g. guest mode)
+            if (myOrders.length === 0) {
+                myOrders = JSON.parse(localStorage.getItem('userOrders')) || [];
+            }
+
+            if (myOrders.length > 0) {
+                let html = `
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                myOrders.reverse().forEach(order => {
+                    const statusText = order.status || 'Processing';
+                    let statusClass = 'status-processing'; // default orange
+                    let inlineStyle = '';
+                    
+                    if (statusText === 'Delivered' || statusText === 'Confirmed' || statusText === 'Shipped') {
+                        statusClass = 'status-delivered'; // green
+                    } else if (statusText === 'Cancelled') {
+                        statusClass = ''; 
+                        inlineStyle = 'background: rgba(244, 67, 54, 0.1); color: #f44336;'; // red
+                    }
+
+                    const productText = order.items ? order.items : order.product;
+                    const orderId = order.id ? order.id : 'N/A';
+
+                    html += `
+                        <tr>
+                            <td>${orderId}</td>
+                            <td>${order.date}</td>
+                            <td><small>${productText}</small></td>
+                            <td>${order.total}</td>
+                            <td><span class="status-badge ${statusClass}" style="${inlineStyle}">${statusText}</span></td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <p>No orders found in your history.</p>
+                        <a href="index.html#categories" class="cta-button" style="display: inline-block; margin-top: 20px;">Start Shopping</a>
+                    </div>
+                `;
+            }
+        });
+
+        // Global logout will be used from script.js
+    </script>
+</body>
+</html>

@@ -35,7 +35,7 @@
             <div class="line"></div>
         </div>
 
-        <div class="product-grid">
+        <div class="product-grid" id="dynamicProductGrid">
             <!-- Villain -->
             <div class="product-card" onclick="location.href='product-detail.html?brand=Villain&product=VILLAIN Classic perfume | Long Lasting EDP | Bold Woody Fragrance Eau de Parfum - 100 ml (For Men)&price=₹400&originalPrice=₹799&imgBase=images/villain_perfume&ext=webp&desc=This macho scent is made for the rebel in you who knows how to go out strong and make it last for long.'">
                 <div class="product-img slider-container">
@@ -143,6 +143,11 @@
             &copy; 2026 YJ Menswear. All Rights Reserved.
         </div>
     </footer>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
+    <script>
+        loadCategoryProducts('perfumes');
+    </script>
 </body>
 </html>
