@@ -321,3 +321,321 @@ async function loadCategoryProducts(category) {
         console.error("Error loading dynamic products", e);
     }
 }
+
+// Theme Management
+document.addEventListener('DOMContentLoaded', () => {
+    // Remove old button if it exists
+    const oldBtn = document.querySelector('.theme-toggle-btn');
+    if (oldBtn) oldBtn.remove();
+
+    // Prevent multiple injections
+    if (!document.querySelector('.theme-switcher-container')) {
+        const container = document.createElement('div');
+        container.className = 'theme-switcher-container';
+        
+        // Setup Themes
+        const themes = [
+            { id: 'dark', colorClass: 'dot-dark' },
+            { id: 'light', colorClass: 'dot-light' },
+            { id: 'navy', colorClass: 'dot-navy' },
+            { id: 'olive', colorClass: 'dot-olive' },
+            { id: 'wine', colorClass: 'dot-wine' },
+            { id: 'slate', colorClass: 'dot-slate' }
+        ];
+
+        let savedTheme = localStorage.getItem('yj_theme') || 'dark';
+        if (savedTheme !== 'dark') {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'theme-options';
+
+        const mainBtn = document.createElement('div');
+        mainBtn.className = 'main-theme-btn';
+        mainBtn.innerHTML = '🎨';
+        mainBtn.title = 'Choose Theme';
+
+        themes.forEach(theme => {
+            const dot = document.createElement('div');
+            dot.className = `theme-dot ${theme.colorClass} ${savedTheme === theme.id ? 'active' : ''}`;
+            dot.title = theme.id.charAt(0).toUpperCase() + theme.id.slice(1) + ' Mode';
+            
+            dot.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Apply theme
+                if (theme.id === 'dark') {
+                    document.documentElement.removeAttribute('data-theme');
+                } else {
+                    document.documentElement.setAttribute('data-theme', theme.id);
+                }
+                localStorage.setItem('yj_theme', theme.id);
+                
+                // Update active state
+                optionsDiv.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                
+                // Close menu
+                container.classList.remove('active');
+            });
+            optionsDiv.appendChild(dot);
+        });
+
+        mainBtn.addEventListener('click', () => {
+            container.classList.toggle('active');
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!container.contains(e.target)) {
+                container.classList.remove('active');
+            }
+        });
+
+        container.appendChild(optionsDiv);
+        container.appendChild(mainBtn);
+        document.body.appendChild(container);
+    }
+});
+
+// Global Features Injection (Cart Drawer)
+document.addEventListener('DOMContentLoaded', () => {
+    // Sliding Cart Drawer
+    if (!document.querySelector('.cart-drawer')) {
+        // Create Overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'cart-drawer-overlay';
+        
+        // Create Drawer
+        const drawer = document.createElement('div');
+        drawer.className = 'cart-drawer';
+        drawer.innerHTML = `
+            <div class="cart-header">
+                <h3>Your Cart</h3>
+                <button class="close-cart">&times;</button>
+            </div>
+            <div class="cart-items-container" id="drawerCartItems">
+                <!-- Items will be injected here -->
+            </div>
+            <div class="cart-drawer-footer">
+                <div class="cart-total-row">
+                    <span>Total:</span>
+                    <span id="drawerCartTotal">₹0</span>
+                </div>
+                <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        document.body.appendChild(drawer);
+
+        // Toggle Logic
+        const toggleCart = (e) => {
+            if(e) e.preventDefault();
+            drawer.classList.toggle('active');
+            overlay.classList.toggle('active');
+            updateDrawerCart(); // Function to refresh items
+        };
+
+        // Close on overlay or close btn
+        overlay.addEventListener('click', toggleCart);
+        drawer.querySelector('.close-cart').addEventListener('click', toggleCart);
+
+        // Intercept Cart Links
+        document.querySelectorAll('a[href="cart.html"], a[href="cart.html?"]').forEach(link => {
+            link.addEventListener('click', toggleCart);
+        });
+    }
+});
+
+// Function to update the drawer cart from localStorage
+function updateDrawerCart() {
+    const container = document.getElementById('drawerCartItems');
+    const totalEl = document.getElementById('drawerCartTotal');
+    if (!container) return;
+
+    let cart = JSON.parse(localStorage.getItem('yj_cart')) || [];
+    
+    if (cart.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:var(--text-muted); margin-top:50px;">Your cart is empty.</p>';
+        totalEl.innerText = '₹0';
+        return;
+    }
+
+    let total = 0;
+    container.innerHTML = cart.map((item, index) => {
+        const price = parseFloat(item.price.replace(/[^0-9.-]+/g,""));
+        total += price * item.qty;
+        return `
+            <div class="cart-drawer-item">
+                <img src="${item.img}" alt="${item.name}">
+                <div class="cart-item-details">
+                    <h4>${item.name}</h4>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                        <span class="price">₹${price.toLocaleString('en-IN')}</span>
+                        <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:5px; border:1px solid var(--glass);">
+                            <span style="cursor:pointer;" onclick="updateDrawerItemQty(${index}, -1)">-</span>
+                            <span>${item.qty}</span>
+                            <span style="cursor:pointer;" onclick="updateDrawerItemQty(${index}, 1)">+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    totalEl.innerText = `₹${total.toLocaleString('en-IN')}`;
+}
+
+// Global function to update qty from drawer
+window.updateDrawerItemQty = function(index, change) {
+    let cart = JSON.parse(localStorage.getItem('yj_cart')) || [];
+    if (cart[index]) {
+        cart[index].qty += change;
+        if (cart[index].qty <= 0) {
+            cart.splice(index, 1);
+        }
+        localStorage.setItem('yj_cart', JSON.stringify(cart));
+        updateDrawerCart(); // Refresh
+        
+        // If on cart page, refresh it too
+        if (window.location.pathname.includes('cart.html') && typeof renderCart === 'function') {
+            renderCart();
+        }
+    }
+};
+
+// ==========================================
+// Quick View Feature Logic
+// ==========================================
+function injectQuickViewButtons() {
+    document.querySelectorAll('.product-img').forEach(imgContainer => {
+        if (!imgContainer.querySelector('.quick-view-overlay')) {
+            const btn = document.createElement('div');
+            btn.className = 'quick-view-overlay';
+            btn.innerHTML = '👁️ Quick View';
+            btn.onclick = (e) => {
+                e.stopPropagation(); // Prevent going to detail page
+                const card = imgContainer.closest('.product-card');
+                openQuickView(card);
+            };
+            imgContainer.appendChild(btn);
+        }
+    });
+}
+
+function openQuickView(card) {
+    const clickAttr = card.getAttribute('onclick');
+    let name = card.querySelector('.product-name')?.innerText || 'Product';
+    let price = card.querySelector('.product-price')?.childNodes[0]?.nodeValue.trim() || '₹0';
+    let oldPrice = card.querySelector('.product-price span')?.innerText || '';
+    let imgSrc = card.querySelector('img').src;
+
+    if (clickAttr) {
+        const urlMatch = clickAttr.match(/location\.href='([^']+)'/);
+        if (urlMatch) {
+            const urlString = urlMatch[1];
+            try {
+                // Parse params safely without needing full absolute URL context
+                const url = new URL(urlString, window.location.origin + window.location.pathname);
+                const params = new URLSearchParams(url.search);
+                name = params.get('product') || name;
+                price = params.get('price') || price;
+                oldPrice = params.get('originalPrice') || oldPrice;
+                const imgBase = params.get('imgBase');
+                const ext = params.get('ext') || 'png';
+                if (imgBase) imgSrc = `${imgBase}.${ext}`;
+            } catch(e) {}
+        }
+    }
+    
+    let modal = document.getElementById('quickViewModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'quickViewModal';
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+            z-index: 3000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        `;
+        modal.innerHTML = `
+            <div class="qv-content" style="background: var(--bg-card); width: 90%; max-width: 800px; border-radius: 15px; border: 1px solid var(--glass); display: flex; overflow: hidden; position: relative; transform: scale(0.9); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+                <button class="qv-close" style="position: absolute; top: 15px; right: 20px; background: rgba(0,0,0,0.1); width:40px; height:40px; border-radius:50%; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; z-index: 10;">&times;</button>
+                <div style="flex: 1; background: #fff; display: flex; align-items: center; justify-content: center; padding: 30px;">
+                    <img id="qv-img" src="" style="width: 100%; max-height: 350px; object-fit: contain;">
+                </div>
+                <div style="flex: 1; padding: 40px 30px; display: flex; flex-direction: column; justify-content: center;">
+                    <h2 id="qv-title" style="font-size: 1.5rem; margin-bottom: 15px;"></h2>
+                    <div style="font-size: 1.8rem; font-weight: 700; color: var(--primary); margin-bottom: 30px;">
+                        <span id="qv-price"></span>
+                        <span id="qv-oldprice" style="font-size: 1rem; color: var(--text-muted); text-decoration: line-through; margin-left: 10px;"></span>
+                    </div>
+                    <button id="qv-add-cart" class="cta-button" style="width: 100%; text-align: center; border: none; cursor: pointer;">Add to Cart</button>
+                    <a id="qv-more-details" href="#" style="text-align: center; margin-top: 15px; color: var(--text-muted); font-size: 0.9rem; text-decoration: underline;">View Full Details</a>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        modal.querySelector('.qv-close').onclick = () => {
+            modal.style.opacity = '0'; modal.style.visibility = 'hidden';
+            modal.querySelector('.qv-content').style.transform = 'scale(0.9)';
+        };
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.querySelector('.qv-close').click();
+        };
+    }
+    
+    // Populate data
+    document.getElementById('qv-title').innerText = name;
+    document.getElementById('qv-price').innerText = price;
+    document.getElementById('qv-oldprice').innerText = oldPrice ? oldPrice : '';
+    document.getElementById('qv-img').src = imgSrc;
+    
+    // Setup View Full Details link
+    if (clickAttr) {
+        const urlMatch = clickAttr.match(/location\.href='([^']+)'/);
+        if (urlMatch) document.getElementById('qv-more-details').href = urlMatch[1];
+    }
+
+    // Setup add to cart action
+    document.getElementById('qv-add-cart').onclick = () => {
+        let cart = JSON.parse(localStorage.getItem('yj_cart')) || [];
+        const existing = cart.find(c => c.name === name);
+        if(existing) { existing.qty += 1; } 
+        else { cart.push({ name: name, price: price, img: imgSrc, qty: 1 }); }
+        localStorage.setItem('yj_cart', JSON.stringify(cart));
+        
+        showToast('Added to Cart!');
+        modal.querySelector('.qv-close').click(); // Close Modal
+        
+        // Open sliding drawer automatically to show they added it!
+        if(typeof updateDrawerCart === 'function') updateDrawerCart();
+        const drawer = document.querySelector('.cart-drawer');
+        const overlay = document.querySelector('.cart-drawer-overlay');
+        if (drawer && overlay) {
+            drawer.classList.add('active');
+            overlay.classList.add('active');
+        }
+    };
+    
+    // Show modal
+    modal.style.visibility = 'visible';
+    modal.style.opacity = '1';
+    modal.querySelector('.qv-content').style.transform = 'scale(1)';
+}
+
+// Inject on load
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(injectQuickViewButtons, 300); 
+});
+
+// Hook into dynamic category loading to apply Quick View to cloud items too
+const originalLoadCategoryProducts = typeof loadCategoryProducts === 'function' ? loadCategoryProducts : null;
+if (originalLoadCategoryProducts) {
+    window.loadCategoryProducts = async function(category) {
+        await originalLoadCategoryProducts(category);
+        setTimeout(injectQuickViewButtons, 300);
+    };
+}

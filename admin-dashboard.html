@@ -20,7 +20,10 @@
     <main class="section" style="margin-top: 100px;">
         <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
             <h2>Business Overview</h2>
-            <button onclick="loadAdminOrders()" class="cta-button" style="padding: 10px 20px; font-size: 0.9rem;">↻ Refresh Cloud Data</button>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="exportOrdersToCSV()" class="cta-button" style="padding: 10px 20px; font-size: 0.9rem; background: #27ae60; border-color: #27ae60;">📊 Export to Excel</button>
+                <button onclick="loadAdminOrders()" class="cta-button" style="padding: 10px 20px; font-size: 0.9rem;">↻ Refresh Cloud Data</button>
+            </div>
         </div>
 
         <!-- Analytics Section -->
@@ -101,6 +104,52 @@
             window.location.href = "index.html";
         }
 
+        async function exportOrdersToCSV() {
+            try {
+                // Fetch both new and old order keys to ensure full data export
+                const newOrders = await getData('orders') || {};
+                const oldOrders = await getData('allOrders') || {};
+                
+                const combined = { ...oldOrders, ...newOrders };
+                const ordersArray = Object.values(combined);
+                const validOrders = ordersArray.filter(o => o && o.id);
+
+                if (validOrders.length === 0) return alert("No orders to export!");
+
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "Order ID,Date,Customer,Email,Items,Total,Status\n";
+
+                // Unique check using ID
+                const seenIds = new Set();
+                validOrders.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(o => {
+                    if (seenIds.has(o.id)) return;
+                    seenIds.add(o.id);
+                    
+                    const row = [
+                        o.id,
+                        o.date,
+                        `"${o.customer || 'Unknown'}"`,
+                        o.email || 'N/A',
+                        `"${(o.items || o.product || '').replace(/"/g, '""')}"`,
+                        o.total,
+                        o.status || 'Processing'
+                    ].join(",");
+                    csvContent += row + "\n";
+                });
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `YJ_Full_Backup_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (e) {
+                console.error(e);
+                alert("Failed to export data.");
+            }
+        }
+
         async function loadAdminOrders() {
             const container = document.getElementById('adminOrderList');
             container.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;">Loading...</td></tr>';
@@ -131,8 +180,8 @@
                 // Calculate Stats
                 let totalRev = 0;
                 validOrders.forEach(o => {
-                    if (o.status !== 'Cancelled') {
-                        const price = parseFloat(o.total.replace(/[^0-9.]/g, '')) || 0;
+                    if (o.status !== 'Cancelled' && o.total) {
+                        const price = parseFloat(o.total.toString().replace(/[^0-9.]/g, '')) || 0;
                         totalRev += price;
                     }
                 });
@@ -182,7 +231,7 @@
                                         <option value="Delivered" ${status === 'Delivered' ? 'selected' : ''} style="background: #1a1a1a; color: white;">Delivered</option>
                                         <option value="Cancelled" ${status === 'Cancelled' ? 'selected' : ''} style="background: #1a1a1a; color: white;">Cancelled</option>
                                     </select>
-                                    <button onclick='generateInvoice(${JSON.stringify(order).replace(/'/g, "&apos;")})' style="background: #fff; color: #000; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem;">⎙ Print</button>
+                                    <button onclick='generateInvoice(this.dataset.order)' data-order='${JSON.stringify(order).replace(/'/g, "&apos;")}' style="background: #fff; color: #000; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem;">⎙ Print</button>
                                 </div>
                             </td>
                         </tr>
@@ -221,7 +270,8 @@
             }
         }
 
-        function generateInvoice(order) {
+        function generateInvoice(orderData) {
+            const order = typeof orderData === 'string' ? JSON.parse(orderData) : orderData;
             const printWindow = window.open('', '_blank');
             const items = order.items.split(',').map(item => `<li>${item.trim()}</li>`).join('');
             
@@ -312,20 +362,24 @@
                 let html = '';
                 // Since reviews are stored as { productId: [reviews] }
                 Object.entries(allReviewsData).forEach(([pId, reviews]) => {
-                    reviews.forEach((rev, index) => {
-                        html += `
-                            <tr style="border-bottom: 1px solid var(--glass);">
-                                <td style="font-size: 0.8rem; color: var(--text-muted);">${pId}</td>
-                                <td style="font-weight: bold;">${rev.name}</td>
-                                <td style="color: #ffb800;">${'★'.repeat(rev.rating)}</td>
-                                <td style="max-width: 300px; font-size: 0.9rem;">${rev.text}</td>
-                                <td>${rev.date}</td>
-                                <td>
-                                    <button onclick="deleteReview('${pId}', ${index})" style="color: #ff4d4d; background: none; border: none; cursor: pointer; font-weight: bold;">Delete</button>
-                                </td>
-                            </tr>
-                        `;
-                    });
+                    if (reviews && (Array.isArray(reviews) || typeof reviews === 'object')) {
+                        const revArray = Array.isArray(reviews) ? reviews : Object.values(reviews);
+                        revArray.forEach((rev, index) => {
+                            if (!rev) return;
+                            html += `
+                                <tr style="border-bottom: 1px solid var(--glass);">
+                                    <td style="font-size: 0.8rem; color: var(--text-muted);">${pId}</td>
+                                    <td style="font-weight: bold;">${rev.name || 'Anonymous'}</td>
+                                    <td style="color: #ffb800;">${'★'.repeat(rev.rating || 5)}</td>
+                                    <td style="max-width: 300px; font-size: 0.9rem;">${rev.text || 'No comment'}</td>
+                                    <td>${rev.date || 'N/A'}</td>
+                                    <td>
+                                        <button onclick="deleteReview('${pId}', ${index})" style="color: #ff4d4d; background: none; border: none; cursor: pointer; font-weight: bold;">Delete</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
                 });
                 
                 container.innerHTML = html || '<tr><td colspan="6" style="text-align: center; padding: 20px;">No reviews found.</td></tr>';
